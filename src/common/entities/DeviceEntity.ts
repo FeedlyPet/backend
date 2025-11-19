@@ -68,5 +68,5 @@ export class DeviceEntity {
     foodLevels: FoodLevelEntity[];
 
     @OneToMany(() => NotificationEntity, (notification) => notification.device)
-    notifications: Notification[];
+    notifications: NotificationEntity[];
 }

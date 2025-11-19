@@ -14,6 +14,9 @@ export { FeedingEventEntity } from './FeedingEventEntity';
 export { FoodLevelEntity } from './FoodLevelEntity';
 export { NotificationEntity } from './NotificationEntity';
 export { NotificationSettingsEntity } from './NotificationSettingsEntity';
+export { RefreshTokenEntity } from './RefreshTokenEntity';
+export { PasswordResetEntity } from './PasswordResetEntity';
+export { EmailVerificationEntity } from './EmailVerificationEntity';
 
 import { UserEntity } from './UserEntity';
 import { PetEntity } from './PetEntity';
@@ -23,6 +26,9 @@ import { FeedingEventEntity } from './FeedingEventEntity';
 import { FoodLevelEntity } from './FoodLevelEntity';
 import { NotificationEntity } from './NotificationEntity';
 import { NotificationSettingsEntity } from './NotificationSettingsEntity';
+import { RefreshTokenEntity } from './RefreshTokenEntity';
+import { PasswordResetEntity } from './PasswordResetEntity';
+import { EmailVerificationEntity } from './EmailVerificationEntity';
 
 export const entities = [
     UserEntity,
@@ -33,4 +39,7 @@ export const entities = [
     FoodLevelEntity,
     NotificationEntity,
     NotificationSettingsEntity,
+    RefreshTokenEntity,
+    PasswordResetEntity,
+    EmailVerificationEntity,
 ];

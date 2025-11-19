@@ -21,7 +21,7 @@ RUN npm ci
 COPY --from=builder /app/dist ./dist
 
 COPY --from=builder /app/src/migrations ./src/migrations
-COPY --from=builder /app/src/datasource.ts ./src/data-source.ts
+COPY --from=builder /app/src/data-source.ts ./src/data-source.ts
 COPY --from=builder /app/src/common ./src/common
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
