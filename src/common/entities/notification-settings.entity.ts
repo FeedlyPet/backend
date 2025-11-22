@@ -6,7 +6,7 @@ import {
     OneToOne,
     JoinColumn,
 } from 'typeorm';
-import { UserEntity } from './UserEntity';
+import { UserEntity } from './user.entity';
 
 @Entity('notification_settings')
 export class NotificationSettingsEntity {

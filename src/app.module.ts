@@ -18,6 +18,10 @@ import { EmailVerificationEntity } from './common/entities';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PetsModule } from './pets/pets.module';
+import { DevicesModule } from './devices/devices.module';
+import { SchedulesModule } from './schedules/schedules.module';
+import { FeedingEventsModule } from './feeding-events/feeding-events.module';
+import { FoodLevelsModule } from './food-levels/food-levels.module';
 
 @Module({
   imports: [
@@ -44,11 +48,22 @@ import { PetsModule } from './pets/pets.module';
     AuthModule,
     UsersModule,
     PetsModule,
+    DevicesModule,
+    SchedulesModule,
+    FeedingEventsModule,
+    FoodLevelsModule,
   ],
   providers: [
     {
       provide: APP_PIPE,
-      useClass: ValidationPipe,
+      useFactory: () =>
+        new ValidationPipe({
+          transform: true,
+          transformOptions: {
+            enableImplicitConversion: true,
+          },
+          whitelist: true,
+        }),
     },
   ],
 })

@@ -6,10 +6,10 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
-import { DeviceEntity } from './DeviceEntity';
-import { PetEntity } from './PetEntity';
-import { ScheduleEntity } from './ScheduleEntity';
-import { FeedingType } from "../enums/FeedingType";
+import { DeviceEntity } from './device.entity';
+import { PetEntity } from './pet.entity';
+import { ScheduleEntity } from './schedule.entity';
+import { FeedingType } from "../enums/feeding-type";
 
 @Entity('feeding_events')
 export class FeedingEventEntity {

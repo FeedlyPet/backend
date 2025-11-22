@@ -6,9 +6,9 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
-import { UserEntity } from './UserEntity';
-import { DeviceEntity } from './DeviceEntity';
-import { NotificationType } from "../enums/NotificationType";
+import { UserEntity } from './user.entity';
+import { DeviceEntity } from './device.entity';
+import { NotificationType } from "../enums/notification-type";
 
 @Entity('notifications')
 export class NotificationEntity {

@@ -1,0 +1,40 @@
+import { IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CreateDeviceDto {
+  @ApiProperty({
+    description: 'Unique hardware identifier of the device',
+    maxLength: 100,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  deviceId: string;
+
+  @ApiProperty({
+    description: 'Name of the device',
+    maxLength: 100,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  name: string;
+
+  @ApiProperty({
+    description: 'Location of the device',
+    maxLength: 200,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  location?: string;
+
+  @ApiProperty({
+    description: 'Pet ID to associate with this device',
+    required: false,
+  })
+  @IsUUID()
+  @IsOptional()
+  petId?: string;
+}

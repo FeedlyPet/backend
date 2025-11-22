@@ -1,17 +1,30 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PetEntity } from '../common/entities';
-import { CreatePetDto, UpdatePetDto, PetResponseDto } from './dto';
+import {
+  CreatePetDto,
+  UpdatePetDto,
+  PetResponseDto,
+  QueryPetsDto,
+} from './dto';
+import { PaginatedResponseDto } from '../common/dto/pagination.dto';
+import { OwnershipService } from '../common/services';
+import { PaginationHelper } from '../common/utils';
+import { ERROR_MESSAGES } from '../common/constants';
 
 @Injectable()
 export class PetsService {
   constructor(
     @InjectRepository(PetEntity)
     private petsRepository: Repository<PetEntity>,
+    private ownershipService: OwnershipService,
   ) {}
 
-  async create(userId: string, createPetDto: CreatePetDto): Promise<PetResponseDto> {
+  async create(
+    userId: string,
+    createPetDto: CreatePetDto,
+  ): Promise<PetResponseDto> {
     const pet = this.petsRepository.create({
       ...createPetDto,
       userId,
@@ -21,43 +34,56 @@ export class PetsService {
     return this.mapToResponseDto(savedPet);
   }
 
-  async findAll(userId: string): Promise<PetResponseDto[]> {
-    const pets = await this.petsRepository.find({
-      where: { userId },
-      order: { createdAt: 'DESC' },
-    });
+  async findAll(
+    userId: string,
+    query: QueryPetsDto,
+  ): Promise<PaginatedResponseDto<PetResponseDto>> {
+    const { page = 1, limit = 10, search } = query;
 
-    return pets.map((pet) => this.mapToResponseDto(pet));
+    const queryBuilder = this.petsRepository
+      .createQueryBuilder('pet')
+      .where('pet.userId = :userId', { userId });
+
+    if (search) {
+      queryBuilder.andWhere('pet.name ILIKE :search', {
+        search: `%${search}%`,
+      });
+    }
+
+    PaginationHelper.applyPagination(queryBuilder, query, 'pet', 'createdAt');
+
+    return PaginationHelper.buildPaginatedResponse(
+      queryBuilder,
+      page,
+      limit,
+      (pet) => this.mapToResponseDto(pet),
+    );
   }
 
   async findOne(id: string, userId: string): Promise<PetResponseDto> {
-    const pet = await this.petsRepository.findOne({
-      where: { id },
-    });
-
-    if (!pet) {
-      throw new NotFoundException('Pet not found');
-    }
-
-    if (pet.userId !== userId) {
-      throw new ForbiddenException('You do not have access to this pet');
-    }
+    const pet = await this.ownershipService.verifyDirectOwnership(
+      this.petsRepository,
+      id,
+      userId,
+      ERROR_MESSAGES.PET.NOT_FOUND,
+      ERROR_MESSAGES.PET.NOT_OWNED,
+    );
 
     return this.mapToResponseDto(pet);
   }
 
-  async update(id: string, userId: string, updatePetDto: UpdatePetDto): Promise<PetResponseDto> {
-    const pet = await this.petsRepository.findOne({
-      where: { id },
-    });
-
-    if (!pet) {
-      throw new NotFoundException('Pet not found');
-    }
-
-    if (pet.userId !== userId) {
-      throw new ForbiddenException('You do not have access to this pet');
-    }
+  async update(
+    id: string,
+    userId: string,
+    updatePetDto: UpdatePetDto,
+  ): Promise<PetResponseDto> {
+    const pet = await this.ownershipService.verifyDirectOwnership(
+      this.petsRepository,
+      id,
+      userId,
+      ERROR_MESSAGES.PET.NOT_FOUND,
+      ERROR_MESSAGES.PET.NOT_OWNED,
+    );
 
     Object.assign(pet, updatePetDto);
     const updatedPet = await this.petsRepository.save(pet);
@@ -66,17 +92,13 @@ export class PetsService {
   }
 
   async remove(id: string, userId: string): Promise<void> {
-    const pet = await this.petsRepository.findOne({
-      where: { id },
-    });
-
-    if (!pet) {
-      throw new NotFoundException('Pet not found');
-    }
-
-    if (pet.userId !== userId) {
-      throw new ForbiddenException('You do not have access to this pet');
-    }
+    const pet = await this.ownershipService.verifyDirectOwnership(
+      this.petsRepository,
+      id,
+      userId,
+      ERROR_MESSAGES.PET.NOT_FOUND,
+      ERROR_MESSAGES.PET.NOT_OWNED,
+    );
 
     await this.petsRepository.remove(pet);
   }

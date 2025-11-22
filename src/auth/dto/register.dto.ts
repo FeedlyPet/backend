@@ -1,17 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength, Matches } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, Matches, ValidateIf } from 'class-validator';
 
 export class RegisterDto {
-  @ApiProperty({
-    example: 'user@example.com',
-  })
+  @ApiProperty()
   @IsEmail({}, { message: 'Invalid email format.' })
   @IsNotEmpty({ message: 'Email is required.' })
   email: string;
 
-  @ApiProperty({
-    example: 'StrongPassword123!',
-  })
+  @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'Password is required.' })
   @MinLength(8, { message: 'Password must contain at least 8 characters.' })
@@ -20,18 +16,16 @@ export class RegisterDto {
   })
   password: string;
 
-  @ApiProperty({
-    example: 'John Doe',
-  })
+  @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'Name is required.' })
   @MinLength(2, { message: 'The name must contain at least 2 characters.' })
   name: string;
 
   @ApiProperty({
-    example: 'Europe/Kyiv',
     required: false,
   })
+  @ValidateIf((o) => o.timezone !== undefined)
   @IsString()
   timezone?: string;
 }

@@ -4,7 +4,6 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 export class UpdateProfileDto {
     @ApiPropertyOptional({
         description: 'User full name',
-        example: 'John Doe',
         minLength: 2,
         maxLength: 100,
     })
@@ -16,7 +15,6 @@ export class UpdateProfileDto {
 
     @ApiPropertyOptional({
         description: 'User email address',
-        example: 'john.doe@example.com',
     })
     @IsOptional()
     @IsEmail({}, { message: 'Invalid email format' })
@@ -24,7 +22,6 @@ export class UpdateProfileDto {
 
     @ApiPropertyOptional({
         description: 'User timezone (IANA format)',
-        example: 'Europe/Kiev',
         maxLength: 50,
     })
     @IsOptional()

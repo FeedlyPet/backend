@@ -8,14 +8,16 @@ import {
     Param,
     Patch,
     Post,
+    Query,
     UseGuards,
     ValidationPipe,
 } from '@nestjs/common';
-import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {PetsService} from './pets.service';
-import {CreatePetDto, PetResponseDto, UpdatePetDto} from './dto';
-import {JwtAuthGuard} from '../auth/guards/jwt-auth.guard';
-import {CurrentUser} from '../auth/decorators/current-user.decorator';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { PetsService } from './pets.service';
+import { CreatePetDto, PetResponseDto, UpdatePetDto, QueryPetsDto } from './dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { PaginatedResponseDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Pets')
 @Controller('pets')
@@ -44,13 +46,16 @@ export class PetsController {
     }
 
     @Get()
-    @ApiOperation({ summary: 'Get all user pets' })
+    @ApiOperation({ summary: 'Get all user pets with pagination, sorting and search' })
     @ApiResponse({
         status: 401,
         description: 'Unauthorized'
     })
-    async findAll(@CurrentUser() user: any): Promise<PetResponseDto[]> {
-        return this.petsService.findAll(user.id);
+    async findAll(
+        @CurrentUser() user: any,
+        @Query(ValidationPipe) query: QueryPetsDto,
+    ): Promise<PaginatedResponseDto<PetResponseDto>> {
+        return this.petsService.findAll(user.id, query);
     }
 
     @Get(':id')

@@ -5,7 +5,7 @@ import {
     ManyToOne,
     JoinColumn,
 } from 'typeorm';
-import { DeviceEntity } from "./DeviceEntity";
+import { DeviceEntity } from "./device.entity";
 
 @Entity('food_levels')
 export class FoodLevelEntity {

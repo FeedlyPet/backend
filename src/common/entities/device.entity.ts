@@ -8,12 +8,12 @@ import {
     OneToMany,
     JoinColumn,
 } from 'typeorm';
-import { UserEntity } from './UserEntity';
-import { PetEntity } from './PetEntity';
-import { ScheduleEntity } from './ScheduleEntity';
-import { FeedingEventEntity } from './FeedingEventEntity';
-import { FoodLevelEntity } from './FoodLevelEntity';
-import { NotificationEntity } from './NotificationEntity';
+import { UserEntity } from './user.entity';
+import { PetEntity } from './pet.entity';
+import { ScheduleEntity } from './schedule.entity';
+import { FeedingEventEntity } from './feeding-event.entity';
+import { FoodLevelEntity } from './food-level.entity';
+import { NotificationEntity } from './notification.entity';
 
 @Entity('devices')
 export class DeviceEntity {
@@ -40,9 +40,6 @@ export class DeviceEntity {
 
     @Column({ type: 'timestamp with time zone', nullable: true, name: 'last_seen' })
     lastSeen: Date | null;
-
-    @Column({ type: 'varchar', length: 20, nullable: true, name: 'firmware_version' })
-    firmwareVersion: string | null;
 
     @CreateDateColumn({ type: 'timestamp with time zone', name: 'created_at' })
     createdAt: Date;

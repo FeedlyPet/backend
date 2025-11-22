@@ -8,10 +8,10 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from './UserEntity';
-import { DeviceEntity } from './DeviceEntity';
-import { FeedingEventEntity } from './FeedingEventEntity';
-import { PetSpecies } from "../enums/PetSpecies";
+import { UserEntity } from './user.entity';
+import { DeviceEntity } from './device.entity';
+import { FeedingEventEntity } from './feeding-event.entity';
+import { PetSpecies } from "../enums/pet-species";
 
 @Entity('pets')
 export class PetEntity {

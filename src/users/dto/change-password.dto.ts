@@ -4,7 +4,6 @@ import { ApiProperty } from '@nestjs/swagger';
 export class ChangePasswordDto {
     @ApiProperty({
         description: 'Current password for verification',
-        example: 'OldPassword123!',
     })
     @IsNotEmpty({ message: 'Current password is required' })
     @IsString()
@@ -12,7 +11,6 @@ export class ChangePasswordDto {
 
     @ApiProperty({
         description: 'New password (min 8 chars, must include uppercase, lowercase, and number)',
-        example: 'NewStrongPassword123!',
         minLength: 8,
     })
     @IsNotEmpty({ message: 'New password is required' })

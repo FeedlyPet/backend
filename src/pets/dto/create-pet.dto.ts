@@ -1,11 +1,10 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString, Max, MaxLength, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PetSpecies } from '../../common/enums/PetSpecies';
+import { PetSpecies } from '../../common/enums/pet-species';
 
 export class CreatePetDto {
   @ApiProperty({
     description: 'Name of the pet',
-    example: 'Fluffy',
     maxLength: 100,
   })
   @IsString()
@@ -16,7 +15,6 @@ export class CreatePetDto {
   @ApiProperty({
     description: 'Species of the pet',
     enum: PetSpecies,
-    example: PetSpecies.CAT,
   })
   @IsEnum(PetSpecies)
   @IsNotEmpty()
@@ -24,7 +22,6 @@ export class CreatePetDto {
 
   @ApiProperty({
     description: 'Weight of the pet in kilograms',
-    example: 4.5,
     minimum: 0.1,
     maximum: 200,
   })

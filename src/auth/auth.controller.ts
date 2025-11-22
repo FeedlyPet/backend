@@ -5,7 +5,6 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -34,7 +33,7 @@ export class AuthController {
   @ApiResponse({
     status: 400,
   })
-  async register(@Body(ValidationPipe) registerDto: RegisterDto) {
+  async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
@@ -45,7 +44,7 @@ export class AuthController {
   @ApiResponse({
     status: 401,
   })
-  async login(@Body(ValidationPipe) loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
@@ -59,7 +58,7 @@ export class AuthController {
   })
   async logout(
     @CurrentUser() user: any,
-    @Body(ValidationPipe) body: RefreshTokenDto,
+    @Body() body: RefreshTokenDto,
   ) {
     return this.authService.logout(user.id, body.refreshToken);
   }
@@ -71,7 +70,7 @@ export class AuthController {
   @ApiResponse({
     status: 401,
   })
-  async refresh(@Body(ValidationPipe) refreshTokenDto: RefreshTokenDto) {
+  async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refreshTokens(refreshTokenDto.refreshToken);
   }
 
@@ -80,7 +79,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request password reset email' })
   async forgotPassword(
-    @Body(ValidationPipe) forgotPasswordDto: ForgotPasswordDto,
+    @Body() forgotPasswordDto: ForgotPasswordDto,
   ) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
@@ -93,7 +92,7 @@ export class AuthController {
     status: 400,
   })
   async resetPassword(
-    @Body(ValidationPipe) resetPasswordDto: ResetPasswordDto,
+    @Body() resetPasswordDto: ResetPasswordDto,
   ) {
     return this.authService.resetPassword(resetPasswordDto);
   }
@@ -105,7 +104,7 @@ export class AuthController {
   @ApiResponse({
     status: 400,
   })
-  async verifyEmail(@Body(ValidationPipe) verifyEmailDto: VerifyEmailDto) {
+  async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
     return this.authService.verifyEmail(verifyEmailDto);
   }
 
@@ -117,7 +116,7 @@ export class AuthController {
     status: 400,
   })
   async resendVerification(
-    @Body(ValidationPipe) resendDto: ResendVerificationDto,
+    @Body() resendDto: ResendVerificationDto,
   ) {
     return this.authService.resendVerificationEmail(resendDto);
   }

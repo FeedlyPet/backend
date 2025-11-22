@@ -8,8 +8,8 @@ import {
     OneToMany,
     JoinColumn,
 } from 'typeorm';
-import { DeviceEntity } from './DeviceEntity';
-import { FeedingEventEntity } from './FeedingEventEntity';
+import { DeviceEntity } from './device.entity';
+import { FeedingEventEntity } from './feeding-event.entity';
 
 @Entity('schedules')
 export class ScheduleEntity {

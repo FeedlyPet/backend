@@ -1,34 +1,34 @@
-import { PetSpecies } from '../enums/PetSpecies';
-import { FeedingType } from '../enums/FeedingType';
-import { NotificationType } from '../enums/NotificationType';
+import { PetSpecies } from '../enums/pet-species';
+import { FeedingType } from '../enums/feeding-type';
+import { NotificationType } from '../enums/notification-type';
 
-export { PetSpecies } from '../enums/PetSpecies';
-export { FeedingType } from '../enums/FeedingType';
-export { NotificationType } from '../enums/NotificationType';
+export { PetSpecies } from '../enums/pet-species';
+export { FeedingType } from '../enums/feeding-type';
+export { NotificationType } from '../enums/notification-type';
 
-export { UserEntity } from './UserEntity';
-export { PetEntity } from './PetEntity';
-export { DeviceEntity } from './DeviceEntity';
-export { ScheduleEntity } from './ScheduleEntity';
-export { FeedingEventEntity } from './FeedingEventEntity';
-export { FoodLevelEntity } from './FoodLevelEntity';
-export { NotificationEntity } from './NotificationEntity';
-export { NotificationSettingsEntity } from './NotificationSettingsEntity';
-export { RefreshTokenEntity } from './RefreshTokenEntity';
-export { PasswordResetEntity } from './PasswordResetEntity';
-export { EmailVerificationEntity } from './EmailVerificationEntity';
+export { UserEntity } from './user.entity';
+export { PetEntity } from './pet.entity';
+export { DeviceEntity } from './device.entity';
+export { ScheduleEntity } from './schedule.entity';
+export { FeedingEventEntity } from './feeding-event.entity';
+export { FoodLevelEntity } from './food-level.entity';
+export { NotificationEntity } from './notification.entity';
+export { NotificationSettingsEntity } from './notification-settings.entity';
+export { RefreshTokenEntity } from './refresh-token.entity';
+export { PasswordResetEntity } from './password-reset.entity';
+export { EmailVerificationEntity } from './email-verification.entity';
 
-import { UserEntity } from './UserEntity';
-import { PetEntity } from './PetEntity';
-import { DeviceEntity } from './DeviceEntity';
-import { ScheduleEntity } from './ScheduleEntity';
-import { FeedingEventEntity } from './FeedingEventEntity';
-import { FoodLevelEntity } from './FoodLevelEntity';
-import { NotificationEntity } from './NotificationEntity';
-import { NotificationSettingsEntity } from './NotificationSettingsEntity';
-import { RefreshTokenEntity } from './RefreshTokenEntity';
-import { PasswordResetEntity } from './PasswordResetEntity';
-import { EmailVerificationEntity } from './EmailVerificationEntity';
+import { UserEntity } from './user.entity';
+import { PetEntity } from './pet.entity';
+import { DeviceEntity } from './device.entity';
+import { ScheduleEntity } from './schedule.entity';
+import { FeedingEventEntity } from './feeding-event.entity';
+import { FoodLevelEntity } from './food-level.entity';
+import { NotificationEntity } from './notification.entity';
+import { NotificationSettingsEntity } from './notification-settings.entity';
+import { RefreshTokenEntity } from './refresh-token.entity';
+import { PasswordResetEntity } from './password-reset.entity';
+import { EmailVerificationEntity } from './email-verification.entity';
 
 export const entities = [
     UserEntity,

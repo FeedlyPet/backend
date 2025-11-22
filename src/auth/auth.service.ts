@@ -85,6 +85,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         timezone: user.timezone,
+        isEmailVerified: user.isEmailVerified,
       },
       ...tokens,
     };

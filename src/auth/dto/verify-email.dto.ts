@@ -4,7 +4,6 @@ import { ApiProperty } from '@nestjs/swagger';
 export class VerifyEmailDto {
     @ApiProperty({
         description: 'Email verification token',
-        example: 'abc123def456ghi789',
     })
     @IsNotEmpty({ message: 'Verification token required.' })
     @IsString({ message: 'Token must be a string.' })

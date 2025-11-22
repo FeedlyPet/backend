@@ -7,13 +7,13 @@ import {
     OneToMany,
     OneToOne,
 } from 'typeorm';
-import { PetEntity } from './PetEntity';
-import { DeviceEntity } from './DeviceEntity';
-import { NotificationEntity } from './NotificationEntity';
-import { NotificationSettingsEntity } from './NotificationSettingsEntity';
-import { RefreshTokenEntity } from './RefreshTokenEntity';
-import { PasswordResetEntity } from './PasswordResetEntity';
-import { EmailVerificationEntity } from './EmailVerificationEntity';
+import { PetEntity } from './pet.entity';
+import { DeviceEntity } from './device.entity';
+import { NotificationEntity } from './notification.entity';
+import { NotificationSettingsEntity } from './notification-settings.entity';
+import { RefreshTokenEntity } from './refresh-token.entity';
+import { PasswordResetEntity } from './password-reset.entity';
+import { EmailVerificationEntity } from './email-verification.entity';
 
 @Entity('users')
 export class UserEntity {
