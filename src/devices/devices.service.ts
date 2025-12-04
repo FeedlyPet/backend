@@ -4,17 +4,21 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DeviceEntity, PetEntity } from '../common/entities';
+import { DeviceEntity, PetEntity, FeedingEventEntity, FeedingType } from '../common/entities';
 import {
   CreateDeviceDto,
   UpdateDeviceDto,
   DeviceResponseDto,
+  DeviceWithPasswordResponseDto,
   QueryDevicesDto,
+  ManualFeedDto,
+  ManualFeedResponseDto,
 } from './dto';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
 import { OwnershipService } from '../common/services';
-import { PaginationHelper } from '../common/utils';
+import { PaginationHelper, MqttPasswordUtil } from '../common/utils';
 import { ERROR_MESSAGES } from '../common/constants';
+import { MqttService } from '../mqtt';
 
 @Injectable()
 export class DevicesService {
@@ -23,13 +27,16 @@ export class DevicesService {
     private devicesRepository: Repository<DeviceEntity>,
     @InjectRepository(PetEntity)
     private petsRepository: Repository<PetEntity>,
+    @InjectRepository(FeedingEventEntity)
+    private feedingEventsRepository: Repository<FeedingEventEntity>,
     private ownershipService: OwnershipService,
+    private mqttService: MqttService,
   ) {}
 
   async create(
     userId: string,
     createDeviceDto: CreateDeviceDto,
-  ): Promise<DeviceResponseDto> {
+  ): Promise<DeviceWithPasswordResponseDto> {
     const existingDevice = await this.devicesRepository.findOne({
       where: { deviceId: createDeviceDto.deviceId },
     });
@@ -46,15 +53,21 @@ export class DevicesService {
       );
     }
 
+    const { plainPassword, hashedPassword } = MqttPasswordUtil.generateAndHash();
+
     const device = this.devicesRepository.create({
       ...createDeviceDto,
       userId,
       isOnline: false,
       lastSeen: null,
+      mqttPasswordHash: hashedPassword,
     });
 
     const savedDevice = await this.devicesRepository.save(device);
-    return this.mapToResponseDto(savedDevice);
+    return {
+      ...this.mapToResponseDto(savedDevice),
+      mqttPassword: plainPassword,
+    };
   }
 
   async findAll(
@@ -143,6 +156,70 @@ export class DevicesService {
     );
 
     await this.devicesRepository.remove(device);
+  }
+
+  async regenerateMqttPassword(
+    id: string,
+    userId: string,
+  ): Promise<DeviceWithPasswordResponseDto> {
+    const device = await this.ownershipService.verifyDirectOwnership(
+      this.devicesRepository,
+      id,
+      userId,
+      ERROR_MESSAGES.DEVICE.NOT_FOUND,
+      ERROR_MESSAGES.DEVICE.NOT_OWNED,
+    );
+
+    const { plainPassword, hashedPassword } = MqttPasswordUtil.generateAndHash();
+
+    device.mqttPasswordHash = hashedPassword;
+    const updatedDevice = await this.devicesRepository.save(device);
+
+    return {
+      ...this.mapToResponseDto(updatedDevice),
+      mqttPassword: plainPassword,
+    };
+  }
+
+  async manualFeed(
+    id: string,
+    userId: string,
+    manualFeedDto: ManualFeedDto,
+  ): Promise<ManualFeedResponseDto> {
+    const device = await this.ownershipService.verifyDirectOwnership(
+      this.devicesRepository,
+      id,
+      userId,
+      ERROR_MESSAGES.DEVICE.NOT_FOUND,
+      ERROR_MESSAGES.DEVICE.NOT_OWNED,
+    );
+
+    let commandSent = false;
+    if (this.mqttService.isConnected()) {
+      commandSent = await this.mqttService.sendFeedCommand(
+        device.deviceId,
+        manualFeedDto.portionSize,
+      );
+    }
+
+    const feedingEvent = this.feedingEventsRepository.create({
+      deviceId: device.id,
+      petId: device.petId,
+      portionSize: manualFeedDto.portionSize,
+      type: FeedingType.MANUAL,
+      success: true,
+      timestamp: new Date(),
+    });
+
+    await this.feedingEventsRepository.save(feedingEvent);
+
+    return {
+      success: true,
+      message: commandSent
+        ? 'Manual feeding command sent successfully'
+        : 'Feeding event recorded (MQTT not connected)',
+      commandSent,
+    };
   }
 
   private mapToResponseDto(device: DeviceEntity): DeviceResponseDto {

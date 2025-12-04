@@ -8,13 +8,13 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-feedlypet_password}
       POSTGRES_DB: ${DB_NAME:-feedlypet_db}
     ports:
-      - '${DB_PORT:-5432}:5432'
+      - '${DB_PORT:-5434}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - feedlypet-network
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-feedlypet}']
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-feedlypet} -d ${DB_NAME:-feedlypet_db}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,10 +42,15 @@ services:
       MAILJET_FROM_EMAIL: ${MAILJET_FROM_EMAIL:-noreply@feedlypet.com}
       MAILJET_FROM_NAME: ${MAILJET_FROM_NAME:-FeedlyPet}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
+      MQTT_BROKER_URL: ${MQTT_BROKER_URL:-mqtt://emqx:1883}
+      MQTT_USERNAME: ${MQTT_USERNAME}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
     ports:
       - '${PORT:-3000}:3000'
     depends_on:
       postgres:
+        condition: service_healthy
+      emqx:
         condition: service_healthy
     networks:
       - feedlypet-network
@@ -67,10 +72,45 @@ services:
     depends_on:
       - postgres
 
+  emqx:
+    image: emqx/emqx:5.8.3
+    container_name: feedlypet-emqx
+    restart: unless-stopped
+    environment:
+      EMQX_NAME: feedlypet-emqx
+      EMQX_HOST: 127.0.0.1
+      EMQX_DASHBOARD__DEFAULT_USERNAME: ${MQTT_DASHBOARD_USER:-admin}
+      EMQX_DASHBOARD__DEFAULT_PASSWORD: ${MQTT_DASHBOARD_PASSWORD:-feedlypet_mqtt_admin}
+      EMQX_ALLOW_ANONYMOUS: ${MQTT_ALLOW_ANONYMOUS:-false}
+      EMQX_LOADED_PLUGINS: ""
+      EMQX_LOADED_MODULES: ""
+    ports:
+      - '${MQTT_PORT:-1883}:1883'
+      - '${MQTT_WS_PORT:-8083}:8083'
+      - '${MQTT_DASHBOARD_PORT:-18083}:18083'
+    volumes:
+      - emqx_data:/opt/emqx/data
+      - emqx_log:/opt/emqx/log
+      - ./emqx-auth.conf:/opt/emqx/etc/emqx-auth.conf:ro
+    networks:
+      - feedlypet-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "emqx", "ctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_data:
     driver: local
   pgadmin_data:
+    driver: local
+  emqx_data:
+    driver: local
+  emqx_log:
     driver: local
 
 networks:

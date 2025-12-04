@@ -17,6 +17,7 @@ export { NotificationSettingsEntity } from './notification-settings.entity';
 export { RefreshTokenEntity } from './refresh-token.entity';
 export { PasswordResetEntity } from './password-reset.entity';
 export { EmailVerificationEntity } from './email-verification.entity';
+export { EmailLogEntity, EmailType } from './email-log.entity';
 
 import { UserEntity } from './user.entity';
 import { PetEntity } from './pet.entity';
@@ -29,6 +30,7 @@ import { NotificationSettingsEntity } from './notification-settings.entity';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { PasswordResetEntity } from './password-reset.entity';
 import { EmailVerificationEntity } from './email-verification.entity';
+import { EmailLogEntity } from './email-log.entity';
 
 export const entities = [
     UserEntity,
@@ -42,4 +44,5 @@ export const entities = [
     RefreshTokenEntity,
     PasswordResetEntity,
     EmailVerificationEntity,
+    EmailLogEntity,
 ];

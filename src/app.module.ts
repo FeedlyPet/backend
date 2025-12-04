@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { typeOrmConfig } from "./common/typeorm.config";
-import { DeviceEntity } from './common/entities';
+import {DeviceEntity, EmailLogEntity} from './common/entities';
 import { FeedingEventEntity } from './common/entities';
 import { FoodLevelEntity } from './common/entities';
 import { NotificationEntity } from './common/entities';
@@ -22,6 +22,9 @@ import { DevicesModule } from './devices/devices.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { FeedingEventsModule } from './feeding-events/feeding-events.module';
 import { FoodLevelsModule } from './food-levels/food-levels.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { StatisticsModule } from './statistics/statistics.module';
+import { MqttModule } from './mqtt';
 
 @Module({
   imports: [
@@ -43,6 +46,7 @@ import { FoodLevelsModule } from './food-levels/food-levels.module';
           RefreshTokenEntity,
           PasswordResetEntity,
           EmailVerificationEntity,
+          EmailLogEntity,
       ]
     }),
     AuthModule,
@@ -52,6 +56,9 @@ import { FoodLevelsModule } from './food-levels/food-levels.module';
     SchedulesModule,
     FeedingEventsModule,
     FoodLevelsModule,
+    NotificationsModule,
+    StatisticsModule,
+    MqttModule,
   ],
   providers: [
     {

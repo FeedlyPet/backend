@@ -41,6 +41,9 @@ export class DeviceEntity {
     @Column({ type: 'timestamp with time zone', nullable: true, name: 'last_seen' })
     lastSeen: Date | null;
 
+    @Column({ type: 'varchar', length: 255, name: 'mqtt_password_hash' })
+    mqttPasswordHash: string;
+
     @CreateDateColumn({ type: 'timestamp with time zone', name: 'created_at' })
     createdAt: Date;
 

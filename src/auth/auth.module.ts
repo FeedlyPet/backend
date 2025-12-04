@@ -5,11 +5,13 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { EmailService } from './email.service';
+import { EmailRateLimiterService } from './email-rate-limiter.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserEntity } from '../common/entities';
 import { RefreshTokenEntity } from '../common/entities';
 import { PasswordResetEntity } from '../common/entities';
 import { EmailVerificationEntity } from '../common/entities';
+import { EmailLogEntity } from '../common/entities';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { EmailVerificationEntity } from '../common/entities';
       RefreshTokenEntity,
       PasswordResetEntity,
       EmailVerificationEntity,
+      EmailLogEntity,
     ]),
     PassportModule,
     JwtModule.register({
@@ -26,7 +29,7 @@ import { EmailVerificationEntity } from '../common/entities';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, EmailService, JwtStrategy],
-  exports: [AuthService],
+  providers: [AuthService, EmailService, EmailRateLimiterService, JwtStrategy],
+  exports: [AuthService, EmailService],
 })
 export class AuthModule {}

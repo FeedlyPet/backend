@@ -37,4 +37,10 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: 'User not found',
     EMAIL_IN_USE: 'Email is already in use',
   },
+
+  NOTIFICATION: {
+    NOT_FOUND: 'Notification not found',
+    NOT_OWNED: 'Notification not found or does not belong to you',
+    SETTINGS_NOT_FOUND: 'Notification settings not found',
+  },
 } as const;

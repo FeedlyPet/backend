@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DevicesService } from './devices.service';
-import { CreateDeviceDto, DeviceResponseDto, UpdateDeviceDto, QueryDevicesDto } from './dto';
+import { CreateDeviceDto, DeviceResponseDto, DeviceWithPasswordResponseDto, UpdateDeviceDto, QueryDevicesDto, ManualFeedDto, ManualFeedResponseDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
@@ -44,7 +44,7 @@ export class DevicesController {
   async create(
     @CurrentUser() user: any,
     @Body(ValidationPipe) createDeviceDto: CreateDeviceDto,
-  ): Promise<DeviceResponseDto> {
+  ): Promise<DeviceWithPasswordResponseDto> {
     return this.devicesService.create(user.id, createDeviceDto);
   }
 
@@ -128,5 +128,54 @@ export class DevicesController {
     @CurrentUser() user: any,
   ): Promise<void> {
     return this.devicesService.remove(id, user.id);
+  }
+
+  @Post(':id/regenerate-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Regenerate MQTT password for device' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Device does not belong to user',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Device not found',
+  })
+  async regeneratePassword(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+  ): Promise<DeviceWithPasswordResponseDto> {
+    return this.devicesService.regenerateMqttPassword(id, user.id);
+  }
+
+  @Post(':id/feed')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Trigger manual feeding for a device' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid portion size',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Device does not belong to user',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Device not found',
+  })
+  async manualFeed(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @Body(ValidationPipe) manualFeedDto: ManualFeedDto,
+  ): Promise<ManualFeedResponseDto> {
+    return this.devicesService.manualFeed(id, user.id, manualFeedDto);
   }
 }
