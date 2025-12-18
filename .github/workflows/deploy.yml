@@ -67,19 +67,19 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         env:
           GITHUB_REPOSITORY: ${{ steps.repo.outputs.repository }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_ACTOR: ${{ github.actor }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
-          envs: GITHUB_REPOSITORY,GITHUB_TOKEN,GITHUB_ACTOR
+          envs: GITHUB_REPOSITORY,GH_PAT,GITHUB_ACTOR
           script: |
             # Download docker-compose.prod.yml
             curl -o docker-compose.yml https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/docker-compose.prod.yml
 
             # Login to GitHub Container Registry
-            echo ${GITHUB_TOKEN} | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
+            echo ${GH_PAT} | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
 
             # Pull and restart (using .env file from VPS)
             export GITHUB_REPOSITORY=${GITHUB_REPOSITORY}
