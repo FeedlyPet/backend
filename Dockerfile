@@ -25,11 +25,10 @@ COPY --from=builder /app/src/data-source.ts ./src/data-source.ts
 COPY --from=builder /app/src/common ./src/common
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
-COPY docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
+COPY wait-for-db.js ./wait-for-db.js
 
 EXPOSE 3000
 
 ENV NODE_ENV=production
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["sh", "-c", "node wait-for-db.js && npm run migration:run && node dist/main"]
