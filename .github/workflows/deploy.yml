@@ -66,23 +66,23 @@ jobs:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         env:
-          GITHUB_REPOSITORY: ${{ steps.repo.outputs.repository }}
+          GITHUB_REPOSITORY_LOWER: ${{ steps.repo.outputs.repository }}
           GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_ACTOR: ${{ github.actor }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
-          envs: GITHUB_REPOSITORY,GH_PAT,GITHUB_ACTOR
+          envs: GITHUB_REPOSITORY_LOWER,GH_PAT,GITHUB_ACTOR
           script: |
             # Download docker-compose.prod.yml
-            curl -o docker-compose.yml https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/docker-compose.prod.yml
+            curl -o docker-compose.yml https://raw.githubusercontent.com/${GITHUB_REPOSITORY_LOWER}/main/docker-compose.prod.yml
 
             # Login to GitHub Container Registry
             echo ${GH_PAT} | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
 
             # Pull and restart (using .env file from VPS)
-            export GITHUB_REPOSITORY=${GITHUB_REPOSITORY}
+            export GITHUB_REPOSITORY=${GITHUB_REPOSITORY_LOWER}
 
             docker compose pull
             docker compose down
