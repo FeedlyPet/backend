@@ -72,7 +72,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.VPS_PASSWORD }}
           envs: GITHUB_REPOSITORY,GITHUB_TOKEN,GITHUB_ACTOR
           script: |
             # Download docker-compose.prod.yml
