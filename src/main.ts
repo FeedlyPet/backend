@@ -17,8 +17,6 @@ async function bootstrap() {
     }),
   );
 
-  app.setGlobalPrefix('api');
-
   const config = new DocumentBuilder()
     .setTitle('FeedlyPet API')
     .setDescription('FeedlyPet backend API documentation')
