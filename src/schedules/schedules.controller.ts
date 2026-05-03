@@ -12,9 +12,19 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { SchedulesService } from './schedules.service';
-import { CreateScheduleDto, ScheduleResponseDto, UpdateScheduleDto, QuerySchedulesDto } from './dto';
+import {
+  CreateScheduleDto,
+  ScheduleResponseDto,
+  UpdateScheduleDto,
+  QuerySchedulesDto,
+} from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
@@ -31,7 +41,8 @@ export class SchedulesController {
   @ApiOperation({ summary: 'Create new feeding schedule for a device' })
   @ApiResponse({
     status: 400,
-    description: 'Bad request - Invalid data, max schedules exceeded, or time interval too short',
+    description:
+      'Bad request - Invalid data, max schedules exceeded, or time interval too short',
   })
   @ApiResponse({
     status: 404,
@@ -46,7 +57,9 @@ export class SchedulesController {
   }
 
   @Get('devices/:deviceId/schedules')
-  @ApiOperation({ summary: 'Get all schedules for a device with pagination and filtering' })
+  @ApiOperation({
+    summary: 'Get all schedules for a device with pagination and filtering',
+  })
   @ApiResponse({
     status: 404,
     description: 'Device not found',

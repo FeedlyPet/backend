@@ -1,4 +1,14 @@
-import { IsNotEmpty, IsInt, Min, Max, IsEnum, IsUUID, IsOptional, IsBoolean, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsInt,
+  Min,
+  Max,
+  IsEnum,
+  IsUUID,
+  IsOptional,
+  IsBoolean,
+  IsString,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { FeedingType } from '../../common/enums/feeding-type';
 

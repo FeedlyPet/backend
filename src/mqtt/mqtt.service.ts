@@ -1,4 +1,9 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  OnModuleDestroy,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -142,7 +147,10 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private async handleDeviceStatus(hardwareId: string, payload: DeviceStatusPayload) {
+  private async handleDeviceStatus(
+    hardwareId: string,
+    payload: DeviceStatusPayload,
+  ) {
     const device = await this.devicesRepository.findOne({
       where: { deviceId: hardwareId },
     });
@@ -156,7 +164,9 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     device.lastSeen = new Date();
     await this.devicesRepository.save(device);
 
-    this.logger.log(`Device ${hardwareId} status updated: ${payload.online ? 'online' : 'offline'}`);
+    this.logger.log(
+      `Device ${hardwareId} status updated: ${payload.online ? 'online' : 'offline'}`,
+    );
 
     if (payload.foodLevel !== undefined) {
       await this.saveFoodLevel(device.id, payload.foodLevel);
@@ -187,7 +197,10 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     this.logger.log(`Food level recorded for device ${deviceId}: ${level}%`);
   }
 
-  private async handleFeedingEvent(hardwareId: string, payload: FeedingEventPayload) {
+  private async handleFeedingEvent(
+    hardwareId: string,
+    payload: FeedingEventPayload,
+  ) {
     const device = await this.devicesRepository.findOne({
       where: { deviceId: hardwareId },
     });
@@ -199,7 +212,8 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
 
     let scheduleId: string | null = null;
     if (payload.scheduleId) {
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (uuidRegex.test(payload.scheduleId)) {
         const schedule = await this.schedulesRepository.findOne({
           where: { id: payload.scheduleId },
@@ -208,10 +222,14 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
         if (schedule) {
           scheduleId = payload.scheduleId;
         } else {
-          this.logger.warn(`Schedule not found for device ${hardwareId}: ${payload.scheduleId}`);
+          this.logger.warn(
+            `Schedule not found for device ${hardwareId}: ${payload.scheduleId}`,
+          );
         }
       } else {
-        this.logger.warn(`Invalid scheduleId format from device ${hardwareId}: ${payload.scheduleId}`);
+        this.logger.warn(
+          `Invalid scheduleId format from device ${hardwareId}: ${payload.scheduleId}`,
+        );
       }
     }
 
@@ -220,23 +238,35 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
       petId: device.petId,
       scheduleId,
       portionSize: payload.portionSize,
-      type: payload.type === 'automatic' ? FeedingType.AUTOMATIC : FeedingType.MANUAL,
+      type:
+        payload.type === 'automatic'
+          ? FeedingType.AUTOMATIC
+          : FeedingType.MANUAL,
       success: payload.success,
       errorMessage: payload.errorMessage || null,
       timestamp: new Date(payload.timestamp),
     });
 
     await this.feedingEventsRepository.save(feedingEvent);
-    this.logger.log(`Feeding event recorded for device ${hardwareId}: ${payload.portionSize}g`);
+    this.logger.log(
+      `Feeding event recorded for device ${hardwareId}: ${payload.portionSize}g`,
+    );
   }
 
-  private async handleDeviceError(hardwareId: string, payload: DeviceErrorPayload) {
+  private async handleDeviceError(
+    hardwareId: string,
+    payload: DeviceErrorPayload,
+  ) {
     this.logger.error(
       `Device error from ${hardwareId}: [${payload.errorCode}] ${payload.errorMessage}`,
     );
   }
 
-  async sendFeedCommand(hardwareId: string, portionSize: number, scheduleId?: string): Promise<boolean> {
+  async sendFeedCommand(
+    hardwareId: string,
+    portionSize: number,
+    scheduleId?: string,
+  ): Promise<boolean> {
     if (!this.client || !this.client.connected) {
       this.logger.warn('MQTT client not connected');
       return false;
@@ -251,19 +281,32 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     };
 
     return new Promise((resolve) => {
-      this.client!.publish(topic, JSON.stringify(payload), { qos: 1 }, (error) => {
-        if (error) {
-          this.logger.error(`Failed to send feed command to ${hardwareId}`, error);
-          resolve(false);
-        } else {
-          this.logger.log(`Feed command sent to ${hardwareId}: ${portionSize}g`);
-          resolve(true);
-        }
-      });
+      this.client!.publish(
+        topic,
+        JSON.stringify(payload),
+        { qos: 1 },
+        (error) => {
+          if (error) {
+            this.logger.error(
+              `Failed to send feed command to ${hardwareId}`,
+              error,
+            );
+            resolve(false);
+          } else {
+            this.logger.log(
+              `Feed command sent to ${hardwareId}: ${portionSize}g`,
+            );
+            resolve(true);
+          }
+        },
+      );
     });
   }
 
-  async sendConfigCommand(hardwareId: string, config: ConfigCommandPayload): Promise<boolean> {
+  async sendConfigCommand(
+    hardwareId: string,
+    config: ConfigCommandPayload,
+  ): Promise<boolean> {
     if (!this.client || !this.client.connected) {
       this.logger.warn('MQTT client not connected');
       return false;
@@ -272,15 +315,20 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     const topic = `${this.topicPrefix}/${hardwareId}/command/config`;
 
     return new Promise((resolve) => {
-      this.client!.publish(topic, JSON.stringify(config), { qos: 1 }, (error) => {
-        if (error) {
-          this.logger.error(`Failed to send config to ${hardwareId}`, error);
-          resolve(false);
-        } else {
-          this.logger.log(`Config sent to ${hardwareId}`);
-          resolve(true);
-        }
-      });
+      this.client!.publish(
+        topic,
+        JSON.stringify(config),
+        { qos: 1 },
+        (error) => {
+          if (error) {
+            this.logger.error(`Failed to send config to ${hardwareId}`, error);
+            resolve(false);
+          } else {
+            this.logger.log(`Config sent to ${hardwareId}`);
+            resolve(true);
+          }
+        },
+      );
     });
   }
 

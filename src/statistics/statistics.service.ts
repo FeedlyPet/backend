@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
-import { FeedingEventEntity, DeviceEntity, FeedingType } from '../common/entities';
+import {
+  FeedingEventEntity,
+  DeviceEntity,
+  FeedingType,
+} from '../common/entities';
 import {
   QueryStatisticsDto,
   StatisticsPeriod,
@@ -32,7 +36,10 @@ export class StatisticsService {
     );
 
     const { startDate, endDate } = this.calculateDateRange(query);
-    const { previousStart, previousEnd } = this.calculatePreviousPeriod(startDate, endDate);
+    const { previousStart, previousEnd } = this.calculatePreviousPeriod(
+      startDate,
+      endDate,
+    );
 
     const [currentEvents, previousEvents] = await Promise.all([
       this.getEventsInRange(deviceId, startDate, endDate),
@@ -41,7 +48,11 @@ export class StatisticsService {
 
     const currentStats = this.calculateStats(currentEvents);
     const previousStats = this.calculateStats(previousEvents);
-    const dailyBreakdown = this.calculateDailyBreakdown(currentEvents, startDate, endDate);
+    const dailyBreakdown = this.calculateDailyBreakdown(
+      currentEvents,
+      startDate,
+      endDate,
+    );
 
     return {
       totalFeedings: currentStats.totalFeedings,
@@ -71,7 +82,10 @@ export class StatisticsService {
     };
   }
 
-  private calculateDateRange(query: QueryStatisticsDto): { startDate: Date; endDate: Date } {
+  private calculateDateRange(query: QueryStatisticsDto): {
+    startDate: Date;
+    endDate: Date;
+  } {
     const now = new Date();
     let startDate: Date;
     let endDate: Date = new Date(now.setHours(23, 59, 59, 999));
@@ -137,16 +151,24 @@ export class StatisticsService {
     manualFeedings: number;
   } {
     const totalFeedings = events.length;
-    const totalFood = events.reduce((sum, e) => sum + (e.success ? e.portionSize : 0), 0);
+    const totalFood = events.reduce(
+      (sum, e) => sum + (e.success ? e.portionSize : 0),
+      0,
+    );
     const successfulFeedings = events.filter((e) => e.success).length;
     const failedFeedings = events.filter((e) => !e.success).length;
-    const automaticFeedings = events.filter((e) => e.type === FeedingType.AUTOMATIC).length;
-    const manualFeedings = events.filter((e) => e.type === FeedingType.MANUAL).length;
+    const automaticFeedings = events.filter(
+      (e) => e.type === FeedingType.AUTOMATIC,
+    ).length;
+    const manualFeedings = events.filter(
+      (e) => e.type === FeedingType.MANUAL,
+    ).length;
 
     return {
       totalFeedings,
       totalFood,
-      averagePortion: successfulFeedings > 0 ? Math.round(totalFood / successfulFeedings) : 0,
+      averagePortion:
+        successfulFeedings > 0 ? Math.round(totalFood / successfulFeedings) : 0,
       successfulFeedings,
       failedFeedings,
       automaticFeedings,
@@ -159,7 +181,8 @@ export class StatisticsService {
     startDate: Date,
     endDate: Date,
   ): DailyBreakdownDto[] {
-    const breakdown: Map<string, { feedings: number; food: number }> = new Map();
+    const breakdown: Map<string, { feedings: number; food: number }> =
+      new Map();
 
     const current = new Date(startDate);
     while (current <= endDate) {

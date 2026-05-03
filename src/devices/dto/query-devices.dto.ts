@@ -1,16 +1,7 @@
-import { IsOptional, IsEnum } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-
-export enum DeviceSortBy {
-  NAME = 'name',
-  DEVICE_ID = 'deviceId',
-  LOCATION = 'location',
-  IS_ONLINE = 'isOnline',
-  LAST_SEEN = 'lastSeen',
-  CREATED_AT = 'createdAt',
-  UPDATED_AT = 'updatedAt',
-}
+import { DeviceSortBy } from './device-sort-by';
 
 export class QueryDevicesDto extends PaginationDto {
   @ApiPropertyOptional({

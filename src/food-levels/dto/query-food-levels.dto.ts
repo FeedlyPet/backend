@@ -1,12 +1,7 @@
-import { IsOptional, IsEnum, IsDateString } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-
-export enum FoodLevelSortBy {
-  TIMESTAMP = 'timestamp',
-  LEVEL = 'level',
-  ESTIMATED_DAYS_LEFT = 'estimatedDaysLeft',
-}
+import { FoodLevelSortBy } from './food-level-sort-by';
 
 export class QueryFoodLevelsDto extends PaginationDto {
   @ApiPropertyOptional({

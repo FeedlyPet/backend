@@ -1,11 +1,28 @@
-import {BadRequestException, Injectable, NotFoundException, UnauthorizedException,} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {JwtService} from '@nestjs/jwt';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import {EmailVerificationEntity, PasswordResetEntity, RefreshTokenEntity, UserEntity} from '../common/entities';
-import {ForgotPasswordDto, LoginDto, RegisterDto, ResendVerificationDto, ResetPasswordDto, VerifyEmailDto} from './dto';
-import {EmailService} from './email.service';
+import {
+  EmailVerificationEntity,
+  PasswordResetEntity,
+  RefreshTokenEntity,
+  UserEntity,
+} from '../common/entities';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  RegisterDto,
+  ResendVerificationDto,
+  ResetPasswordDto,
+  VerifyEmailDto,
+} from './dto';
+import { EmailService } from './email.service';
 
 @Injectable()
 export class AuthService {
@@ -139,7 +156,8 @@ export class AuthService {
 
     if (!user) {
       return {
-        message: 'If the user exists, password reset instructions will be sent to the email',
+        message:
+          'If the user exists, password reset instructions will be sent to the email',
       };
     }
 
@@ -156,13 +174,18 @@ export class AuthService {
     await this.passwordResetRepository.save(passwordReset);
 
     try {
-      await this.emailService.sendPasswordResetEmail(user.email, resetToken, user.name);
+      await this.emailService.sendPasswordResetEmail(
+        user.email,
+        resetToken,
+        user.name,
+      );
     } catch (error) {
       console.error('Failed to send password reset email:', error);
     }
 
     return {
-      message: 'If the user exists, password reset instructions will be sent to the email',
+      message:
+        'If the user exists, password reset instructions will be sent to the email',
     };
   }
 
@@ -338,7 +361,8 @@ export class AuthService {
 
     if (!user) {
       return {
-        message: 'If the user exists and email is not verified, verification email will be sent',
+        message:
+          'If the user exists and email is not verified, verification email will be sent',
       };
     }
 

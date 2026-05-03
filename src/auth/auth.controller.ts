@@ -6,7 +6,12 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import {
   RegisterDto,
@@ -56,10 +61,7 @@ export class AuthController {
   @ApiResponse({
     status: 401,
   })
-  async logout(
-    @CurrentUser() user: any,
-    @Body() body: RefreshTokenDto,
-  ) {
+  async logout(@CurrentUser() user: any, @Body() body: RefreshTokenDto) {
     return this.authService.logout(user.id, body.refreshToken);
   }
 
@@ -78,9 +80,7 @@ export class AuthController {
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request password reset email' })
-  async forgotPassword(
-    @Body() forgotPasswordDto: ForgotPasswordDto,
-  ) {
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
@@ -91,9 +91,7 @@ export class AuthController {
   @ApiResponse({
     status: 400,
   })
-  async resetPassword(
-    @Body() resetPasswordDto: ResetPasswordDto,
-  ) {
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
@@ -115,9 +113,7 @@ export class AuthController {
   @ApiResponse({
     status: 400,
   })
-  async resendVerification(
-    @Body() resendDto: ResendVerificationDto,
-  ) {
+  async resendVerification(@Body() resendDto: ResendVerificationDto) {
     return this.authService.resendVerificationEmail(resendDto);
   }
 }

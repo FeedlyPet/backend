@@ -102,7 +102,12 @@ export class FoodLevelsService {
       endDate,
     );
 
-    PaginationHelper.applyPagination(queryBuilder, query, 'foodLevel', 'timestamp');
+    PaginationHelper.applyPagination(
+      queryBuilder,
+      query,
+      'foodLevel',
+      'timestamp',
+    );
 
     return PaginationHelper.buildPaginatedResponse(
       queryBuilder,

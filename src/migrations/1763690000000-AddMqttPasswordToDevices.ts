@@ -1,7 +1,9 @@
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 import * as crypto from 'crypto';
 
-export class AddMqttPasswordToDevices1763690000000 implements MigrationInterface {
+export class AddMqttPasswordToDevices1763690000000
+  implements MigrationInterface
+{
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.addColumn(
       'devices',

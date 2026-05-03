@@ -1,16 +1,9 @@
-import { IsOptional, IsEnum, IsDateString, IsBoolean } from 'class-validator';
+import { IsBoolean, IsDateString, IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { Type } from 'class-transformer';
 import { FeedingType } from '../../common/enums/feeding-type';
-
-export enum FeedingEventSortBy {
-  TIMESTAMP = 'timestamp',
-  PORTION_SIZE = 'portionSize',
-  TYPE = 'type',
-  SUCCESS = 'success',
-  CREATED_AT = 'createdAt',
-}
+import { FeedingEventSortBy } from './feeding-event-sort-by';
 
 export class QueryFeedingEventsDto extends PaginationDto {
   @ApiPropertyOptional({

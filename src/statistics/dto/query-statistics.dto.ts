@@ -1,11 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsEnum, IsDateString } from 'class-validator';
-
-export enum StatisticsPeriod {
-  WEEK = 'week',
-  MONTH = 'month',
-  YEAR = 'year',
-}
+import { IsDateString, IsEnum, IsOptional } from 'class-validator';
+import { StatisticsPeriod } from './statistics-period';
 
 export class QueryStatisticsDto {
   @ApiPropertyOptional({

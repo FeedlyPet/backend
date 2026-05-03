@@ -1,13 +1,7 @@
-import { SelectQueryBuilder, ObjectLiteral } from 'typeorm';
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import { PaginatedResponseDto } from '../dto/pagination.dto';
 import { PAGINATION_DEFAULTS } from '../constants';
-
-export interface PaginationQuery {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'ASC' | 'DESC';
-}
+import { PaginationQuery } from './pagination-query';
 
 export class PaginationHelper {
   static applyPagination<T extends ObjectLiteral>(
@@ -61,10 +55,13 @@ export class PaginationHelper {
     endDate?: string,
   ): SelectQueryBuilder<T> {
     if (startDate && endDate) {
-      queryBuilder.andWhere(`${alias}.${field} BETWEEN :startDate AND :endDate`, {
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-      });
+      queryBuilder.andWhere(
+        `${alias}.${field} BETWEEN :startDate AND :endDate`,
+        {
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+        },
+      );
     } else if (startDate) {
       queryBuilder.andWhere(`${alias}.${field} >= :startDate`, {
         startDate: new Date(startDate),

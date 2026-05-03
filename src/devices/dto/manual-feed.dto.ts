@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, Min, Max } from 'class-validator';
+import { IsInt, Max, Min } from 'class-validator';
 
 export class ManualFeedDto {
   @ApiProperty({
@@ -12,15 +12,4 @@ export class ManualFeedDto {
   @Min(10, { message: 'Portion size must be at least 10 grams' })
   @Max(500, { message: 'Portion size must not exceed 500 grams' })
   portionSize: number;
-}
-
-export class ManualFeedResponseDto {
-  @ApiProperty({ description: 'Success status' })
-  success: boolean;
-
-  @ApiProperty({ description: 'Message' })
-  message: string;
-
-  @ApiProperty({ description: 'Command sent to device', required: false })
-  commandSent?: boolean;
 }

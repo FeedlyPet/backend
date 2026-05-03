@@ -17,7 +17,7 @@ export { NotificationSettingsEntity } from './notification-settings.entity';
 export { RefreshTokenEntity } from './refresh-token.entity';
 export { PasswordResetEntity } from './password-reset.entity';
 export { EmailVerificationEntity } from './email-verification.entity';
-export { EmailLogEntity, EmailType } from './email-log.entity';
+export { EmailLogEntity } from './email-log.entity';
 
 import { UserEntity } from './user.entity';
 import { PetEntity } from './pet.entity';
@@ -33,16 +33,17 @@ import { EmailVerificationEntity } from './email-verification.entity';
 import { EmailLogEntity } from './email-log.entity';
 
 export const entities = [
-    UserEntity,
-    PetEntity,
-    DeviceEntity,
-    ScheduleEntity,
-    FeedingEventEntity,
-    FoodLevelEntity,
-    NotificationEntity,
-    NotificationSettingsEntity,
-    RefreshTokenEntity,
-    PasswordResetEntity,
-    EmailVerificationEntity,
-    EmailLogEntity,
+  UserEntity,
+  PetEntity,
+  DeviceEntity,
+  ScheduleEntity,
+  FeedingEventEntity,
+  FoodLevelEntity,
+  NotificationEntity,
+  NotificationSettingsEntity,
+  RefreshTokenEntity,
+  PasswordResetEntity,
+  EmailVerificationEntity,
+  EmailLogEntity,
 ];
+export { EmailType } from '../types/email.type';

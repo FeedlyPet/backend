@@ -1,14 +1,7 @@
-import { IsOptional, IsEnum } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-
-export enum PetSortBy {
-  NAME = 'name',
-  SPECIES = 'species',
-  WEIGHT = 'weight',
-  CREATED_AT = 'createdAt',
-  UPDATED_AT = 'updatedAt',
-}
+import { PetSortBy } from './pet-sort-by';
 
 export class QueryPetsDto extends PaginationDto {
   @ApiPropertyOptional({

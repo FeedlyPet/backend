@@ -94,9 +94,7 @@ export class FeedingEventsService {
     return this.mapToResponseDto(event);
   }
 
-  private mapToResponseDto(
-    event: FeedingEventEntity,
-  ): FeedingEventResponseDto {
+  private mapToResponseDto(event: FeedingEventEntity): FeedingEventResponseDto {
     return {
       id: event.id,
       deviceId: event.deviceId,

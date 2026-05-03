@@ -8,8 +8,9 @@ import { ERROR_MESSAGES } from '../constants';
 
 @Injectable()
 export class OwnershipService {
-
-  async verifyDeviceResourceOwnership<T extends { device?: { userId: string } }>(
+  async verifyDeviceResourceOwnership<
+    T extends { device?: { userId: string } },
+  >(
     repository: Repository<T>,
     resourceId: string,
     userId: string,

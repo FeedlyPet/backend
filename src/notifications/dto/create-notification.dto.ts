@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 import { NotificationType } from '../../common/entities';
 
 export class CreateNotificationDto {
@@ -8,7 +15,9 @@ export class CreateNotificationDto {
   @IsNotEmpty()
   userId: string;
 
-  @ApiPropertyOptional({ description: 'Device ID (if notification is device-related)' })
+  @ApiPropertyOptional({
+    description: 'Device ID (if notification is device-related)',
+  })
   @IsOptional()
   @IsUUID()
   deviceId?: string;

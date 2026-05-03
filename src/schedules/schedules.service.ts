@@ -73,7 +73,12 @@ export class SchedulesService {
       queryBuilder.andWhere('schedule.isActive = :isActive', { isActive });
     }
 
-    PaginationHelper.applyPagination(queryBuilder, query, 'schedule', 'feedingTime');
+    PaginationHelper.applyPagination(
+      queryBuilder,
+      query,
+      'schedule',
+      'feedingTime',
+    );
 
     return PaginationHelper.buildPaginatedResponse(
       queryBuilder,

@@ -13,7 +13,9 @@ export class NotificationSettingsResponseDto {
   @ApiProperty({ description: 'Receive notifications for low food level' })
   lowFoodLevel: boolean;
 
-  @ApiProperty({ description: 'Receive notifications for device status changes' })
+  @ApiProperty({
+    description: 'Receive notifications for device status changes',
+  })
   deviceStatus: boolean;
 
   @ApiProperty({ description: 'Last update timestamp' })

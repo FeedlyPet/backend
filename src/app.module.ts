@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { typeOrmConfig } from "./common/typeorm.config";
-import {DeviceEntity, EmailLogEntity} from './common/entities';
+import { typeOrmConfig } from './common/typeorm.config';
+import { DeviceEntity, EmailLogEntity } from './common/entities';
 import { FeedingEventEntity } from './common/entities';
 import { FoodLevelEntity } from './common/entities';
 import { NotificationEntity } from './common/entities';
@@ -35,19 +35,19 @@ import { MqttModule } from './mqtt';
     TypeOrmModule.forRoot({
       ...typeOrmConfig,
       entities: [
-          DeviceEntity,
-          FeedingEventEntity,
-          FoodLevelEntity,
-          NotificationEntity,
-          NotificationSettingsEntity,
-          PetEntity,
-          ScheduleEntity,
-          UserEntity,
-          RefreshTokenEntity,
-          PasswordResetEntity,
-          EmailVerificationEntity,
-          EmailLogEntity,
-      ]
+        DeviceEntity,
+        FeedingEventEntity,
+        FoodLevelEntity,
+        NotificationEntity,
+        NotificationSettingsEntity,
+        PetEntity,
+        ScheduleEntity,
+        UserEntity,
+        RefreshTokenEntity,
+        PasswordResetEntity,
+        EmailVerificationEntity,
+        EmailLogEntity,
+      ],
     }),
     AuthModule,
     UsersModule,

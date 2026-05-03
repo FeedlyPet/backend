@@ -1,10 +1,12 @@
-import {
-  Injectable,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DeviceEntity, PetEntity, FeedingEventEntity, FeedingType } from '../common/entities';
+import {
+  DeviceEntity,
+  PetEntity,
+  FeedingEventEntity,
+  FeedingType,
+} from '../common/entities';
 import {
   CreateDeviceDto,
   UpdateDeviceDto,
@@ -53,7 +55,8 @@ export class DevicesService {
       );
     }
 
-    const { plainPassword, hashedPassword } = MqttPasswordUtil.generateAndHash();
+    const { plainPassword, hashedPassword } =
+      MqttPasswordUtil.generateAndHash();
 
     const device = this.devicesRepository.create({
       ...createDeviceDto,
@@ -78,6 +81,7 @@ export class DevicesService {
 
     const queryBuilder = this.devicesRepository
       .createQueryBuilder('device')
+      .leftJoinAndSelect('device.pet', 'pet')
       .where('device.userId = :userId', { userId });
 
     if (search) {
@@ -87,7 +91,12 @@ export class DevicesService {
       );
     }
 
-    PaginationHelper.applyPagination(queryBuilder, query, 'device', 'createdAt');
+    PaginationHelper.applyPagination(
+      queryBuilder,
+      query,
+      'device',
+      'createdAt',
+    );
 
     return PaginationHelper.buildPaginatedResponse(
       queryBuilder,
@@ -98,13 +107,18 @@ export class DevicesService {
   }
 
   async findOne(id: string, userId: string): Promise<DeviceResponseDto> {
-    const device = await this.ownershipService.verifyDirectOwnership(
+    await this.ownershipService.verifyDirectOwnership(
       this.devicesRepository,
       id,
       userId,
       ERROR_MESSAGES.DEVICE.NOT_FOUND,
       ERROR_MESSAGES.DEVICE.NOT_OWNED,
     );
+
+    const device = await this.devicesRepository.findOne({
+      where: { id },
+      relations: ['pet'],
+    });
 
     return this.mapToResponseDto(device);
   }
@@ -170,7 +184,8 @@ export class DevicesService {
       ERROR_MESSAGES.DEVICE.NOT_OWNED,
     );
 
-    const { plainPassword, hashedPassword } = MqttPasswordUtil.generateAndHash();
+    const { plainPassword, hashedPassword } =
+      MqttPasswordUtil.generateAndHash();
 
     device.mqttPasswordHash = hashedPassword;
     const updatedDevice = await this.devicesRepository.save(device);
@@ -234,6 +249,13 @@ export class DevicesService {
       lastSeen: device.lastSeen,
       createdAt: device.createdAt,
       updatedAt: device.updatedAt,
+      pet: device.pet
+        ? {
+            id: device.pet.id,
+            name: device.pet.name,
+            species: device.pet.species,
+          }
+        : null,
     };
   }
 }

@@ -18,9 +18,12 @@ export const ERROR_MESSAGES = {
   SCHEDULE: {
     NOT_FOUND: 'Schedule not found',
     NOT_OWNED: 'Schedule not found or you do not have access to it',
-    MAX_ACTIVE_REACHED: 'Maximum number of active schedules (10) reached for this device',
-    MIN_INTERVAL_NOT_MET: 'Feeding times must be at least 2 hours apart on the same days',
-    INVALID_TIME_FORMAT: 'Invalid time format. Use HH:MM format (00:00 - 23:59)',
+    MAX_ACTIVE_REACHED:
+      'Maximum number of active schedules (10) reached for this device',
+    MIN_INTERVAL_NOT_MET:
+      'Feeding times must be at least 2 hours apart on the same days',
+    INVALID_TIME_FORMAT:
+      'Invalid time format. Use HH:MM format (00:00 - 23:59)',
   },
 
   FEEDING_EVENT: {

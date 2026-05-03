@@ -36,7 +36,9 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all user notifications with pagination and filtering' })
+  @ApiOperation({
+    summary: 'Get all user notifications with pagination and filtering',
+  })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized',
@@ -64,7 +66,9 @@ export class NotificationsController {
     status: 401,
     description: 'Unauthorized',
   })
-  async getSettings(@CurrentUser() user: any): Promise<NotificationSettingsResponseDto> {
+  async getSettings(
+    @CurrentUser() user: any,
+  ): Promise<NotificationSettingsResponseDto> {
     return this.notificationsService.getSettings(user.id);
   }
 

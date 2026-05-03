@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsInt, Min, Max, IsUUID, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsInt,
+  Min,
+  Max,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateFoodLevelDto {
@@ -17,15 +24,16 @@ export class CreateFoodLevelDto {
   @IsInt()
   @IsNotEmpty()
   @Min(0, {
-    message: 'Level must be at least 0%'
+    message: 'Level must be at least 0%',
   })
   @Max(100, {
-    message: 'Level must not exceed 100%'
+    message: 'Level must not exceed 100%',
   })
   level: number;
 
   @ApiPropertyOptional({
-    description: 'Estimated days until food runs out (calculated automatically if not provided)',
+    description:
+      'Estimated days until food runs out (calculated automatically if not provided)',
   })
   @IsOptional()
   @IsInt()

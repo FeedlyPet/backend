@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { DevicePetDto } from './device-pet.dto';
 
 export class DeviceResponseDto {
   @ApiProperty({
@@ -53,4 +54,7 @@ export class DeviceResponseDto {
     description: 'Last update timestamp',
   })
   updatedAt: Date;
+
+  @ApiProperty({ type: DevicePetDto, nullable: true })
+  pet: DevicePetDto | null;
 }

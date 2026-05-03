@@ -52,7 +52,12 @@ export class NotificationsService {
       queryBuilder.andWhere('notification.deviceId = :deviceId', { deviceId });
     }
 
-    PaginationHelper.applyPagination(queryBuilder, query, 'notification', 'createdAt');
+    PaginationHelper.applyPagination(
+      queryBuilder,
+      query,
+      'notification',
+      'createdAt',
+    );
 
     return PaginationHelper.buildPaginatedResponse(
       queryBuilder,
@@ -78,7 +83,10 @@ export class NotificationsService {
     return this.mapToResponseDto(notification);
   }
 
-  async markAsRead(id: string, userId: string): Promise<NotificationResponseDto> {
+  async markAsRead(
+    id: string,
+    userId: string,
+  ): Promise<NotificationResponseDto> {
     const notification = await this.notificationsRepository.findOne({
       where: { id },
     });
@@ -92,7 +100,8 @@ export class NotificationsService {
     }
 
     notification.isRead = true;
-    const updatedNotification = await this.notificationsRepository.save(notification);
+    const updatedNotification =
+      await this.notificationsRepository.save(notification);
 
     return this.mapToResponseDto(updatedNotification);
   }
@@ -172,11 +181,14 @@ export class NotificationsService {
       settings.deviceStatus = updateDto.deviceStatus;
     }
 
-    const updatedSettings = await this.notificationSettingsRepository.save(settings);
+    const updatedSettings =
+      await this.notificationSettingsRepository.save(settings);
     return this.mapSettingsToResponseDto(updatedSettings);
   }
 
-  async create(createDto: CreateNotificationDto): Promise<NotificationResponseDto | null> {
+  async create(
+    createDto: CreateNotificationDto,
+  ): Promise<NotificationResponseDto | null> {
     const settings = await this.notificationSettingsRepository.findOne({
       where: { userId: createDto.userId },
     });
@@ -194,7 +206,8 @@ export class NotificationsService {
       isRead: false,
     });
 
-    const savedNotification = await this.notificationsRepository.save(notification);
+    const savedNotification =
+      await this.notificationsRepository.save(notification);
     return this.mapToResponseDto(savedNotification);
   }
 
@@ -225,7 +238,9 @@ export class NotificationsService {
     }
   }
 
-  private mapToResponseDto(notification: NotificationEntity): NotificationResponseDto {
+  private mapToResponseDto(
+    notification: NotificationEntity,
+  ): NotificationResponseDto {
     return {
       id: notification.id,
       userId: notification.userId,

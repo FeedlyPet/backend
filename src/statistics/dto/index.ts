@@ -1,7 +1,10 @@
-export { QueryStatisticsDto, StatisticsPeriod } from './query-statistics.dto';
+export { QueryStatisticsDto } from './query-statistics.dto';
 export {
   StatisticsResponseDto,
-  DailyBreakdownDto,
-  PeriodDto,
-  ComparisonDto,
+
+
 } from './statistics-response.dto';
+export { StatisticsPeriod } from './statistics-period';
+export { PeriodDto } from './period.dto';
+export { ComparisonDto } from './comparison.dto';
+export { DailyBreakdownDto } from './daily-breakdown.dto';

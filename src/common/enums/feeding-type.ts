@@ -1,4 +1,4 @@
 export enum FeedingType {
-    AUTOMATIC = 'automatic',
-    MANUAL = 'manual',
+  AUTOMATIC = 'automatic',
+  MANUAL = 'manual',
 }

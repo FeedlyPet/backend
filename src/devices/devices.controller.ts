@@ -12,9 +12,22 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { DevicesService } from './devices.service';
-import { CreateDeviceDto, DeviceResponseDto, DeviceWithPasswordResponseDto, UpdateDeviceDto, QueryDevicesDto, ManualFeedDto, ManualFeedResponseDto } from './dto';
+import {
+  CreateDeviceDto,
+  DeviceResponseDto,
+  DeviceWithPasswordResponseDto,
+  UpdateDeviceDto,
+  QueryDevicesDto,
+  ManualFeedDto,
+  ManualFeedResponseDto,
+} from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
@@ -49,7 +62,9 @@ export class DevicesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all user devices with pagination, sorting and search' })
+  @ApiOperation({
+    summary: 'Get all user devices with pagination, sorting and search',
+  })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized',

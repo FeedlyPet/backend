@@ -10,9 +10,18 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { FoodLevelsService } from './food-levels.service';
-import { CreateFoodLevelDto, FoodLevelResponseDto, QueryFoodLevelsDto } from './dto';
+import {
+  CreateFoodLevelDto,
+  FoodLevelResponseDto,
+  QueryFoodLevelsDto,
+} from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
@@ -26,7 +35,9 @@ export class FoodLevelsController {
 
   @Post('food-levels')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Record new food level reading (MQTT or internal use)' })
+  @ApiOperation({
+    summary: 'Record new food level reading (MQTT or internal use)',
+  })
   @ApiResponse({
     status: 400,
     description: 'Bad request - Invalid data',

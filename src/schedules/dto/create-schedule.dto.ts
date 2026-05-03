@@ -1,4 +1,15 @@
-import { IsNotEmpty, IsInt, Min, Max, IsBoolean, IsArray, ArrayMinSize, ArrayMaxSize, IsIn, Matches } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsInt,
+  Min,
+  Max,
+  IsBoolean,
+  IsArray,
+  ArrayMinSize,
+  ArrayMaxSize,
+  IsIn,
+  Matches,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export const VALID_DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
@@ -22,10 +33,10 @@ export class CreateScheduleDto {
   @IsInt()
   @IsNotEmpty()
   @Min(10, {
-    message: 'Portion size must be at least 10 grams'
+    message: 'Portion size must be at least 10 grams',
   })
   @Max(500, {
-    message: 'Portion size must not exceed 500 grams'
+    message: 'Portion size must not exceed 500 grams',
   })
   portionSize: number;
 
@@ -44,14 +55,14 @@ export class CreateScheduleDto {
   })
   @IsArray()
   @ArrayMinSize(1, {
-    message: 'At least one day must be selected'
+    message: 'At least one day must be selected',
   })
   @ArrayMaxSize(7, {
-    message: 'Cannot have more than 7 days'
+    message: 'Cannot have more than 7 days',
   })
   @IsIn(VALID_DAYS, {
     each: true,
-    message: 'Invalid day of week'
+    message: 'Invalid day of week',
   })
   daysOfWeek: string[];
 }

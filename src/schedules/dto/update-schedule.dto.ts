@@ -1,4 +1,15 @@
-import { IsOptional, IsInt, Min, Max, IsBoolean, IsArray, ArrayMinSize, ArrayMaxSize, IsIn, Matches } from 'class-validator';
+import {
+  IsOptional,
+  IsInt,
+  Min,
+  Max,
+  IsBoolean,
+  IsArray,
+  ArrayMinSize,
+  ArrayMaxSize,
+  IsIn,
+  Matches,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { VALID_DAYS } from './create-schedule.dto';
 

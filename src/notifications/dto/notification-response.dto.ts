@@ -8,7 +8,9 @@ export class NotificationResponseDto {
   @ApiProperty({ description: 'User ID' })
   userId: string;
 
-  @ApiPropertyOptional({ description: 'Device ID (if notification is device-related)' })
+  @ApiPropertyOptional({
+    description: 'Device ID (if notification is device-related)',
+  })
   deviceId: string | null;
 
   @ApiProperty({ description: 'Notification type', enum: NotificationType })

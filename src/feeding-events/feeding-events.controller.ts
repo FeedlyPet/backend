@@ -10,9 +10,18 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { FeedingEventsService } from './feeding-events.service';
-import { CreateFeedingEventDto, FeedingEventResponseDto, QueryFeedingEventsDto } from './dto';
+import {
+  CreateFeedingEventDto,
+  FeedingEventResponseDto,
+  QueryFeedingEventsDto,
+} from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
