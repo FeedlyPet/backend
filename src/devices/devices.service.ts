@@ -120,7 +120,7 @@ export class DevicesService {
       relations: ['pet'],
     });
 
-    return this.mapToResponseDto(device);
+    return this.mapToResponseDto(device!);
   }
 
   async update(
