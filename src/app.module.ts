@@ -25,6 +25,7 @@ import { FoodLevelsModule } from './food-levels/food-levels.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { MqttModule } from './mqtt';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { MqttModule } from './mqtt';
     NotificationsModule,
     StatisticsModule,
     MqttModule,
+    EventsModule,
   ],
   providers: [
     {

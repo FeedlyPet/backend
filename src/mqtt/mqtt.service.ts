@@ -3,6 +3,8 @@ import {
   OnModuleInit,
   OnModuleDestroy,
   Logger,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,6 +25,7 @@ import {
   FoodLevelPayload,
   DeviceErrorPayload,
 } from './dto';
+import { EventsGateway } from '../events/events.gateway';
 
 @Injectable()
 export class MqttService implements OnModuleInit, OnModuleDestroy {
@@ -40,6 +43,8 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     private foodLevelsRepository: Repository<FoodLevelEntity>,
     @InjectRepository(ScheduleEntity)
     private schedulesRepository: Repository<ScheduleEntity>,
+    @Inject(forwardRef(() => EventsGateway))
+    private eventsGateway: EventsGateway,
   ) {}
 
   async onModuleInit() {
@@ -170,6 +175,10 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
 
     if (payload.foodLevel !== undefined) {
       await this.saveFoodLevel(device.id, payload.foodLevel);
+      this.eventsGateway.emitFoodLevel(device.userId, {
+        deviceId: device.id,
+        level: payload.foodLevel,
+      });
     }
   }
 
@@ -184,6 +193,10 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     }
 
     await this.saveFoodLevel(device.id, payload.level);
+    this.eventsGateway.emitFoodLevel(device.userId, {
+      deviceId: device.id,
+      level: payload.level,
+    });
   }
 
   private async saveFoodLevel(deviceId: string, level: number) {
@@ -251,6 +264,15 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     this.logger.log(
       `Feeding event recorded for device ${hardwareId}: ${payload.portionSize}g`,
     );
+
+    this.eventsGateway.emitFeedingResult(device.userId, {
+      deviceId: device.id,
+      deviceName: device.name,
+      portionSize: payload.portionSize,
+      success: payload.success,
+      errorMessage: payload.errorMessage,
+      timestamp: new Date(payload.timestamp).toISOString(),
+    });
   }
 
   private async handleDeviceError(

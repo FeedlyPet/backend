@@ -1,12 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  DeviceEntity,
-  PetEntity,
-  FeedingEventEntity,
-  FeedingType,
-} from '../common/entities';
+import { DeviceEntity, PetEntity } from '../common/entities';
 import {
   CreateDeviceDto,
   UpdateDeviceDto,
@@ -29,8 +24,6 @@ export class DevicesService {
     private devicesRepository: Repository<DeviceEntity>,
     @InjectRepository(PetEntity)
     private petsRepository: Repository<PetEntity>,
-    @InjectRepository(FeedingEventEntity)
-    private feedingEventsRepository: Repository<FeedingEventEntity>,
     private ownershipService: OwnershipService,
     private mqttService: MqttService,
   ) {}
@@ -217,22 +210,11 @@ export class DevicesService {
       );
     }
 
-    const feedingEvent = this.feedingEventsRepository.create({
-      deviceId: device.id,
-      petId: device.petId,
-      portionSize: manualFeedDto.portionSize,
-      type: FeedingType.MANUAL,
-      success: true,
-      timestamp: new Date(),
-    });
-
-    await this.feedingEventsRepository.save(feedingEvent);
-
     return {
-      success: true,
+      success: commandSent,
       message: commandSent
         ? 'Manual feeding command sent successfully'
-        : 'Feeding event recorded (MQTT not connected)',
+        : 'MQTT not connected — command could not be sent',
       commandSent,
     };
   }
