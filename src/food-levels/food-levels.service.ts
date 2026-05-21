@@ -12,6 +12,8 @@ import { OwnershipService } from '../common/services';
 import { PaginationHelper } from '../common/utils';
 import { ERROR_MESSAGES } from '../common/constants';
 import { FoodConsumptionCalculatorService } from './services/food-consumption-calculator.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../common/enums/notification-type';
 
 @Injectable()
 export class FoodLevelsService {
@@ -22,6 +24,7 @@ export class FoodLevelsService {
     private devicesRepository: Repository<DeviceEntity>,
     private ownershipService: OwnershipService,
     private foodConsumptionCalculator: FoodConsumptionCalculatorService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(
@@ -47,9 +50,18 @@ export class FoodLevelsService {
     const savedLevel = await this.foodLevelsRepository.save(foodLevel);
 
     if (this.foodConsumptionCalculator.isLowLevel(createFoodLevelDto.level)) {
-      console.log(
-        `Low food level alert for device ${createFoodLevelDto.deviceId}: ${createFoodLevelDto.level}%`,
-      );
+      const device = await this.devicesRepository.findOne({
+        where: { id: createFoodLevelDto.deviceId },
+      });
+      if (device) {
+        await this.notificationsService.create({
+          userId: device.userId,
+          deviceId: device.id,
+          type: NotificationType.LOW_FOOD_LEVEL,
+          title: `Low food level — ${device.name}`,
+          message: `Food level is at ${createFoodLevelDto.level}% for "${device.name}". Please refill soon.`,
+        });
+      }
     }
 
     return this.mapToResponseDto(savedLevel);

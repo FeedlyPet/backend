@@ -8,6 +8,7 @@ import {
   ScheduleEntity,
 } from '../common/entities';
 import { EventsModule } from '../events/events.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Global()
 @Module({
@@ -19,6 +20,7 @@ import { EventsModule } from '../events/events.module';
       ScheduleEntity,
     ]),
     forwardRef(() => EventsModule),
+    NotificationsModule,
   ],
   providers: [MqttService],
   exports: [MqttService],

@@ -47,6 +47,7 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     private schedulesRepository: Repository<ScheduleEntity>,
     @Inject(forwardRef(() => EventsGateway))
     private eventsGateway: EventsGateway,
+    private notificationsService: NotificationsService,
   ) {}
 
   async onModuleInit() {
@@ -181,6 +182,16 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
       lastSeen: device.lastSeen.toISOString(),
     });
 
+    await this.notificationsService.create({
+      userId: device.userId,
+      deviceId: device.id,
+      type: payload.online ? NotificationType.DEVICE_ONLINE : NotificationType.DEVICE_OFFLINE,
+      title: payload.online ? `${device.name} is online` : `${device.name} is offline`,
+      message: payload.online
+        ? `Device "${device.name}" has connected.`
+        : `Device "${device.name}" has gone offline.`,
+    });
+
     if (payload.foodLevel !== undefined) {
       await this.saveFoodLevel(device.id, payload.foodLevel);
       this.eventsGateway.emitFoodLevel(device.userId, {
@@ -280,6 +291,16 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
       success: payload.success,
       errorMessage: payload.errorMessage,
       timestamp: new Date(payload.timestamp).toISOString(),
+    });
+
+    await this.notificationsService.create({
+      userId: device.userId,
+      deviceId: device.id,
+      type: payload.success ? NotificationType.FEEDING_SUCCESS : NotificationType.FEEDING_FAILED,
+      title: payload.success ? `Fed ${device.name}` : `Feeding failed for ${device.name}`,
+      message: payload.success
+        ? `Successfully dispensed ${payload.portionSize}g for "${device.name}".`
+        : `Failed to dispense food for "${device.name}": ${payload.errorMessage ?? 'unknown error'}.`,
     });
   }
 

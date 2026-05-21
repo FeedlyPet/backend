@@ -9,6 +9,7 @@ import {
 } from '../common/entities';
 import { OwnershipService } from '../common/services';
 import { FoodConsumptionCalculatorService } from './services/food-consumption-calculator.service';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { FoodConsumptionCalculatorService } from './services/food-consumption-ca
       DeviceEntity,
       FeedingEventEntity,
     ]),
+    NotificationsModule,
   ],
   controllers: [FoodLevelsController],
   providers: [
