@@ -26,6 +26,8 @@ import {
   DeviceErrorPayload,
 } from './dto';
 import { EventsGateway } from '../events/events.gateway';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../common/enums/notification-type';
 
 @Injectable()
 export class MqttService implements OnModuleInit, OnModuleDestroy {
@@ -172,6 +174,12 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     this.logger.log(
       `Device ${hardwareId} status updated: ${payload.online ? 'online' : 'offline'}`,
     );
+
+    this.eventsGateway.emitDeviceStatus(device.userId, {
+      deviceId: device.id,
+      isOnline: device.isOnline,
+      lastSeen: device.lastSeen.toISOString(),
+    });
 
     if (payload.foodLevel !== undefined) {
       await this.saveFoodLevel(device.id, payload.foodLevel);

@@ -21,6 +21,12 @@ export interface FoodLevelEvent {
   level: number;
 }
 
+export interface DeviceStatusEvent {
+  deviceId: string;
+  isOnline: boolean;
+  lastSeen: string;
+}
+
 @WebSocketGateway({
   cors: {
     origin: process.env.FRONTEND_URL ?? 'http://localhost:5173',
@@ -67,5 +73,9 @@ export class EventsGateway implements OnGatewayConnection {
 
   emitFoodLevel(userId: string, event: FoodLevelEvent) {
     this.server.to(`user:${userId}`).emit('food:level', event);
+  }
+
+  emitDeviceStatus(userId: string, event: DeviceStatusEvent) {
+    this.server.to(`user:${userId}`).emit('device:status', event);
   }
 }
