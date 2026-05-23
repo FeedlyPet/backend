@@ -78,4 +78,8 @@ export class EventsGateway implements OnGatewayConnection {
   emitDeviceStatus(userId: string, event: DeviceStatusEvent) {
     this.server.to(`user:${userId}`).emit('device:status', event);
   }
+
+  emitNotification(userId: string, event: { id: string; type: string; title: string; message: string; createdAt: Date }) {
+    this.server.to(`user:${userId}`).emit('notification:new', event);
+  }
 }

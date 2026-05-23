@@ -13,7 +13,7 @@ import { PaginationHelper } from '../common/utils';
 import { ERROR_MESSAGES } from '../common/constants';
 import { FoodConsumptionCalculatorService } from './services/food-consumption-calculator.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationType } from '../common/enums/notification-type';
+import { NotificationType } from '../common/entities';
 
 @Injectable()
 export class FoodLevelsService {

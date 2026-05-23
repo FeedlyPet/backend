@@ -27,7 +27,8 @@ import {
 } from './dto';
 import { EventsGateway } from '../events/events.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
-import { NotificationType } from '../common/enums/notification-type';
+import { NotificationType } from '../common/entities';
+import { APP_CONFIG } from '../common/constants';
 
 @Injectable()
 export class MqttService implements OnModuleInit, OnModuleDestroy {
@@ -182,7 +183,7 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
       lastSeen: device.lastSeen.toISOString(),
     });
 
-    await this.notificationsService.create({
+    const statusNotif = await this.notificationsService.create({
       userId: device.userId,
       deviceId: device.id,
       type: payload.online ? NotificationType.DEVICE_ONLINE : NotificationType.DEVICE_OFFLINE,
@@ -191,6 +192,9 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
         ? `Device "${device.name}" has connected.`
         : `Device "${device.name}" has gone offline.`,
     });
+    if (statusNotif) {
+      this.eventsGateway.emitNotification(device.userId, statusNotif);
+    }
 
     if (payload.foodLevel !== undefined) {
       await this.saveFoodLevel(device.id, payload.foodLevel);
@@ -198,6 +202,19 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
         deviceId: device.id,
         level: payload.foodLevel,
       });
+
+      if (payload.foodLevel < APP_CONFIG.FOOD_LEVEL.LOW_LEVEL_THRESHOLD) {
+        const lowNotif = await this.notificationsService.create({
+          userId: device.userId,
+          deviceId: device.id,
+          type: NotificationType.LOW_FOOD_LEVEL,
+          title: `Low food level — ${device.name}`,
+          message: `Food level is at ${payload.foodLevel}% for "${device.name}". Please refill soon.`,
+        });
+        if (lowNotif) {
+          this.eventsGateway.emitNotification(device.userId, lowNotif);
+        }
+      }
     }
   }
 
@@ -216,6 +233,19 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
       deviceId: device.id,
       level: payload.level,
     });
+
+    if (payload.level < APP_CONFIG.FOOD_LEVEL.LOW_LEVEL_THRESHOLD) {
+      const lowNotif = await this.notificationsService.create({
+        userId: device.userId,
+        deviceId: device.id,
+        type: NotificationType.LOW_FOOD_LEVEL,
+        title: `Low food level — ${device.name}`,
+        message: `Food level is at ${payload.level}% for "${device.name}". Please refill soon.`,
+      });
+      if (lowNotif) {
+        this.eventsGateway.emitNotification(device.userId, lowNotif);
+      }
+    }
   }
 
   private async saveFoodLevel(deviceId: string, level: number) {
@@ -293,7 +323,7 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
       timestamp: new Date(payload.timestamp).toISOString(),
     });
 
-    await this.notificationsService.create({
+    const feedNotif = await this.notificationsService.create({
       userId: device.userId,
       deviceId: device.id,
       type: payload.success ? NotificationType.FEEDING_SUCCESS : NotificationType.FEEDING_FAILED,
@@ -302,6 +332,9 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
         ? `Successfully dispensed ${payload.portionSize}g for "${device.name}".`
         : `Failed to dispense food for "${device.name}": ${payload.errorMessage ?? 'unknown error'}.`,
     });
+    if (feedNotif) {
+      this.eventsGateway.emitNotification(device.userId, feedNotif);
+    }
   }
 
   private async handleDeviceError(
