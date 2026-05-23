@@ -3,9 +3,9 @@ import {
   OnModuleInit,
   OnModuleDestroy,
   Logger,
-  Inject,
-  forwardRef,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { LessThan } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -19,7 +19,6 @@ import {
 } from '../common/entities';
 import {
   FeedCommandPayload,
-  ConfigCommandPayload,
   DeviceStatusPayload,
   FeedingEventPayload,
   FoodLevelPayload,
@@ -46,12 +45,11 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     private foodLevelsRepository: Repository<FoodLevelEntity>,
     @InjectRepository(ScheduleEntity)
     private schedulesRepository: Repository<ScheduleEntity>,
-    @Inject(forwardRef(() => EventsGateway))
     private eventsGateway: EventsGateway,
     private notificationsService: NotificationsService,
   ) {}
 
-  async onModuleInit() {
+  onModuleInit() {
     const mqttUrl = this.configService.get<string>('MQTT_BROKER_URL');
 
     if (!mqttUrl) {
@@ -97,12 +95,10 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
       this.logger.log('Reconnecting to MQTT broker...');
     });
 
-    this.client.on('message', async (topic, message) => {
-      try {
-        await this.handleMessage(topic, message.toString());
-      } catch (error) {
+    this.client.on('message', (topic, message) => {
+      this.handleMessage(topic, message.toString()).catch((error: unknown) => {
         this.logger.error(`Error processing message on topic ${topic}`, error);
-      }
+      });
     });
   }
 
@@ -137,22 +133,22 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     const category = parts[2];
     const action = parts[3];
 
-    let payload: any;
+    let payload: unknown;
     try {
-      payload = JSON.parse(message);
+      payload = JSON.parse(message) as unknown;
     } catch {
       this.logger.warn(`Invalid JSON message on topic ${topic}`);
       return;
     }
 
     if (category === 'status' && action === 'online') {
-      await this.handleDeviceStatus(deviceId, payload);
+      await this.handleDeviceStatus(deviceId, payload as DeviceStatusPayload);
     } else if (category === 'status' && action === 'food') {
-      await this.handleFoodLevel(deviceId, payload);
+      await this.handleFoodLevel(deviceId, payload as FoodLevelPayload);
     } else if (category === 'event' && action === 'feeding') {
-      await this.handleFeedingEvent(deviceId, payload);
+      await this.handleFeedingEvent(deviceId, payload as FeedingEventPayload);
     } else if (category === 'error') {
-      await this.handleDeviceError(deviceId, payload);
+      this.handleDeviceError(deviceId, payload as DeviceErrorPayload);
     }
   }
 
@@ -186,8 +182,12 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     const statusNotif = await this.notificationsService.create({
       userId: device.userId,
       deviceId: device.id,
-      type: payload.online ? NotificationType.DEVICE_ONLINE : NotificationType.DEVICE_OFFLINE,
-      title: payload.online ? `${device.name} is online` : `${device.name} is offline`,
+      type: payload.online
+        ? NotificationType.DEVICE_ONLINE
+        : NotificationType.DEVICE_OFFLINE,
+      title: payload.online
+        ? `${device.name} is online`
+        : `${device.name} is offline`,
       message: payload.online
         ? `Device "${device.name}" has connected.`
         : `Device "${device.name}" has gone offline.`,
@@ -326,8 +326,12 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     const feedNotif = await this.notificationsService.create({
       userId: device.userId,
       deviceId: device.id,
-      type: payload.success ? NotificationType.FEEDING_SUCCESS : NotificationType.FEEDING_FAILED,
-      title: payload.success ? `Fed ${device.name}` : `Feeding failed for ${device.name}`,
+      type: payload.success
+        ? NotificationType.FEEDING_SUCCESS
+        : NotificationType.FEEDING_FAILED,
+      title: payload.success
+        ? `Fed ${device.name}`
+        : `Feeding failed for ${device.name}`,
       message: payload.success
         ? `Successfully dispensed ${payload.portionSize}g for "${device.name}".`
         : `Failed to dispense food for "${device.name}": ${payload.errorMessage ?? 'unknown error'}.`,
@@ -337,10 +341,7 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private async handleDeviceError(
-    hardwareId: string,
-    payload: DeviceErrorPayload,
-  ) {
+  private handleDeviceError(hardwareId: string, payload: DeviceErrorPayload) {
     this.logger.error(
       `Device error from ${hardwareId}: [${payload.errorCode}] ${payload.errorMessage}`,
     );
@@ -387,36 +388,39 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  async sendConfigCommand(
-    hardwareId: string,
-    config: ConfigCommandPayload,
-  ): Promise<boolean> {
-    if (!this.client || !this.client.connected) {
-      this.logger.warn('MQTT client not connected');
-      return false;
-    }
-
-    const topic = `${this.topicPrefix}/${hardwareId}/command/config`;
-
-    return new Promise((resolve) => {
-      this.client!.publish(
-        topic,
-        JSON.stringify(config),
-        { qos: 1 },
-        (error) => {
-          if (error) {
-            this.logger.error(`Failed to send config to ${hardwareId}`, error);
-            resolve(false);
-          } else {
-            this.logger.log(`Config sent to ${hardwareId}`);
-            resolve(true);
-          }
-        },
-      );
-    });
-  }
-
   isConnected(): boolean {
     return this.client?.connected ?? false;
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async checkOfflineDevices() {
+    const threshold = new Date(Date.now() - 10 * 60 * 1000); // 10 minutes
+    const staleDevices = await this.devicesRepository.find({
+      where: { isOnline: true, lastSeen: LessThan(threshold) },
+    });
+
+    for (const device of staleDevices) {
+      device.isOnline = false;
+      await this.devicesRepository.save(device);
+
+      this.logger.log(`Device ${device.deviceId} marked offline (no heartbeat)`);
+
+      this.eventsGateway.emitDeviceStatus(device.userId, {
+        deviceId: device.id,
+        isOnline: false,
+        lastSeen: device.lastSeen?.toISOString() ?? new Date().toISOString(),
+      });
+
+      const notif = await this.notificationsService.create({
+        userId: device.userId,
+        deviceId: device.id,
+        type: NotificationType.DEVICE_OFFLINE,
+        title: `${device.name} is offline`,
+        message: `Device "${device.name}" has gone offline.`,
+      });
+      if (notif) {
+        this.eventsGateway.emitNotification(device.userId, notif);
+      }
+    }
   }
 }

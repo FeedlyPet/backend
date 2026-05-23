@@ -1,4 +1,4 @@
-import { Module, Global, forwardRef } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MqttService } from './mqtt.service';
 import {
@@ -19,7 +19,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
       FoodLevelEntity,
       ScheduleEntity,
     ]),
-    forwardRef(() => EventsModule),
+    EventsModule,
     NotificationsModule,
   ],
   providers: [MqttService],
