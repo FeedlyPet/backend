@@ -43,10 +43,6 @@ class FeedlyPetUser(HttpUser):
     def get_notifications(self):
         self.client.get("/notifications", headers=self.auth_headers())
 
-    @task(2)
-    def get_statistics(self):
-        self.client.get("/statistics", headers=self.auth_headers())
-
     @task(1)
     def get_profile(self):
-        self.client.get("/users/me", headers=self.auth_headers())
+        self.client.get("/users/profile", headers=self.auth_headers())
