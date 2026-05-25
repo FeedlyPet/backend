@@ -76,8 +76,9 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           envs: GITHUB_REPOSITORY_LOWER,GH_PAT,GITHUB_ACTOR
           script: |
-            # Download docker-compose.prod.yml
+            # Download config files
             curl -o docker-compose.yml https://raw.githubusercontent.com/${GITHUB_REPOSITORY_LOWER}/main/docker-compose.prod.yml
+            curl -o nginx.conf https://raw.githubusercontent.com/${GITHUB_REPOSITORY_LOWER}/main/nginx.conf
 
             # Login to GitHub Container Registry
             echo ${GH_PAT} | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
@@ -87,5 +88,5 @@ jobs:
 
             docker compose pull
             docker compose down
-            docker compose up -d
+            docker compose up -d --scale app=3
             docker image prune -af

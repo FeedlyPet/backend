@@ -27,6 +27,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { MqttModule } from './mqtt';
 import { EventsModule } from './events/events.module';
+import { RedisModule } from './common/redis.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { EventsModule } from './events/events.module';
       envFilePath: '.env',
     }),
     ScheduleModule.forRoot(),
+    RedisModule,
     TypeOrmModule.forRoot({
       ...typeOrmConfig,
       entities: [

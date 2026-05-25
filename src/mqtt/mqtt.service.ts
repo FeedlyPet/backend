@@ -28,6 +28,7 @@ import { EventsGateway } from '../events/events.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../common/entities';
 import { APP_CONFIG } from '../common/constants';
+import { RedisService } from '../common/redis.service';
 
 @Injectable()
 export class MqttService implements OnModuleInit, OnModuleDestroy {
@@ -47,6 +48,7 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     private schedulesRepository: Repository<ScheduleEntity>,
     private eventsGateway: EventsGateway,
     private notificationsService: NotificationsService,
+    private redisService: RedisService,
   ) {}
 
   onModuleInit() {
@@ -59,7 +61,7 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
 
     try {
       this.client = mqtt.connect(mqttUrl, {
-        clientId: `feedlypet-backend-${Date.now()}`,
+        clientId: `feedlypet-backend-${process.env.HOSTNAME ?? 'local'}-${Date.now()}`,
         username: this.configService.get<string>('MQTT_USERNAME'),
         password: this.configService.get<string>('MQTT_PASSWORD'),
         reconnectPeriod: 5000,
@@ -142,11 +144,23 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     }
 
     if (category === 'status' && action === 'online') {
-      await this.handleDeviceStatus(deviceId, payload as DeviceStatusPayload);
+      const ts = (payload as DeviceStatusPayload).timestamp ?? Date.now();
+      const lockKey = `lock:mqtt:status:${deviceId}:${ts}`;
+      if (await this.redisService.acquireLock(lockKey, 10_000)) {
+        await this.handleDeviceStatus(deviceId, payload as DeviceStatusPayload);
+      }
     } else if (category === 'status' && action === 'food') {
-      await this.handleFoodLevel(deviceId, payload as FoodLevelPayload);
+      const ts = (payload as FoodLevelPayload).timestamp ?? Date.now();
+      const lockKey = `lock:mqtt:food:${deviceId}:${ts}`;
+      if (await this.redisService.acquireLock(lockKey, 10_000)) {
+        await this.handleFoodLevel(deviceId, payload as FoodLevelPayload);
+      }
     } else if (category === 'event' && action === 'feeding') {
-      await this.handleFeedingEvent(deviceId, payload as FeedingEventPayload);
+      const ts = (payload as FeedingEventPayload).timestamp ?? Date.now();
+      const lockKey = `lock:mqtt:feeding:${deviceId}:${ts}`;
+      if (await this.redisService.acquireLock(lockKey, 10_000)) {
+        await this.handleFeedingEvent(deviceId, payload as FeedingEventPayload);
+      }
     } else if (category === 'error') {
       this.handleDeviceError(deviceId, payload as DeviceErrorPayload);
     }
@@ -394,6 +408,12 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async checkOfflineDevices() {
+    const minute = Math.floor(Date.now() / 60_000);
+    const lockKey = `lock:cron:checkOfflineDevices:${minute}`;
+    if (!(await this.redisService.acquireLock(lockKey, 55_000))) {
+      return;
+    }
+
     const threshold = new Date(Date.now() - 10 * 60 * 1000); // 10 minutes
     const staleDevices = await this.devicesRepository.find({
       where: { isOnline: true, lastSeen: LessThan(threshold) },

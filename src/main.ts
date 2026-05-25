@@ -1,13 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { IoAdapter } from '@nestjs/platform-socket.io';
+import { RedisIoAdapter } from './events/redis-io.adapter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useWebSocketAdapter(new IoAdapter(app));
+  const redisIoAdapter = new RedisIoAdapter(app);
+  const redisHost = process.env.REDIS_HOST ?? 'localhost';
+  const redisPort = parseInt(process.env.REDIS_PORT ?? '6379', 10);
+  await redisIoAdapter.connectToRedis(redisHost, redisPort);
+  app.useWebSocketAdapter(redisIoAdapter);
 
   app.enableCors({
     origin: process.env.FRONTEND_URL ?? 'http://localhost:5173',

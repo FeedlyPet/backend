@@ -19,6 +19,20 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: feedlypet-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - feedlypet-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build:
       context: .
@@ -45,12 +59,16 @@ services:
       MQTT_BROKER_URL: ${MQTT_BROKER_URL:-mqtt://emqx:1883}
       MQTT_USERNAME: ${MQTT_USERNAME}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
     ports:
       - '${PORT:-3000}:3000'
     depends_on:
       postgres:
         condition: service_healthy
       emqx:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - feedlypet-network
@@ -111,6 +129,8 @@ volumes:
   emqx_data:
     driver: local
   emqx_log:
+    driver: local
+  redis_data:
     driver: local
 
 networks:
