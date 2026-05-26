@@ -10,8 +10,8 @@ export class StatisticsResponseDto {
   @ApiProperty({ description: 'Total food dispensed in the period (grams)' })
   totalFood: number;
 
-  @ApiProperty({ description: 'Average portion size (grams)' })
-  averagePortion: number;
+  @ApiProperty({ description: 'Average portion size (grams)', nullable: true })
+  averagePortion: number | null;
 
   @ApiProperty({ description: 'Number of successful feedings' })
   successfulFeedings: number;

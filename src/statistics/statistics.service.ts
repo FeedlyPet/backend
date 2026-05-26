@@ -168,7 +168,7 @@ export class StatisticsService {
       totalFeedings,
       totalFood,
       averagePortion:
-        successfulFeedings > 0 ? Math.round(totalFood / successfulFeedings) : 0,
+        successfulFeedings > 0 ? Math.round(totalFood / successfulFeedings) : null,
       successfulFeedings,
       failedFeedings,
       automaticFeedings,
@@ -217,6 +217,9 @@ export class StatisticsService {
   }
 
   private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
