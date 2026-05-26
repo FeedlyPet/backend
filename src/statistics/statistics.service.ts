@@ -144,7 +144,7 @@ export class StatisticsService {
   private calculateStats(events: FeedingEventEntity[]): {
     totalFeedings: number;
     totalFood: number;
-    averagePortion: number;
+    averagePortion: number | null;
     successfulFeedings: number;
     failedFeedings: number;
     automaticFeedings: number;
