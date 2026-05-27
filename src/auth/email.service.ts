@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -161,7 +161,7 @@ export class EmailService {
 
       await this.logEmail(to, subject, emailType, userId, false, errorMessage);
 
-      throw new BadRequestException(errorMessage);
+      throw new HttpException(errorMessage, HttpStatus.TOO_MANY_REQUESTS);
     }
 
     if (!this.mailjet) {
